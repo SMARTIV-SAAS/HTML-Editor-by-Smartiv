@@ -6,9 +6,10 @@ A self-contained HTML editor plugin for Vue 3, built for Android TV signage
 output. The core, the plugins and the sanitizer are all written here — there is
 no editor runtime dependency, and the shipped bundle is ~16 KB gzipped.
 
-> **Rendering on Android TV?** See [`android/README.md`](android/README.md) for
-> the full player integration guide — asset setup, the Compose `HtmlView`, font
-> caching, and seamless coexistence with existing legacy content.
+> **Rendering on Android TV?** Prefer the JitPack AAR — see
+> [`android/JITPACK.md`](android/JITPACK.md). Pushing `main` does **not** update
+> the library; publish a **new Git tag**, then bump the version in the player app.
+> Details & legacy copy-in guide: [`android/README.md`](android/README.md).
 
 ---
 
@@ -438,10 +439,28 @@ inline in existing HTML, so renaming it orphans old content.
 
 ### Rendering inside an existing Compose player
 
-If the app already wraps stored fragments in its own document (the usual legacy
-setup), use [`android/HtmlView.kt`](android/HtmlView.kt) — a drop-in replacement
-that keeps legacy content rendering exactly as before while adding the
-Smartiv path:
+**Recommended:** depend on the JitPack AAR (see [`android/JITPACK.md`](android/JITPACK.md)):
+
+```kotlin
+implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.1")
+```
+
+```kotlin
+import com.smartiv.htmleditor.HtmlView
+
+HtmlView(
+    htmlContent = screen.html,
+    theme = screen.theme,       // "light" | "paper" | "dark" | "midnight" | "brand"
+    rootFontSize = 16.sp,       // 1080p; ~13.sp for 720p panels
+    safeArea = "5%"             // only if this view is full-bleed
+)
+```
+
+CSS/fonts ship inside the AAR. After editor CSS changes: `npm run build:android-assets`, commit, **new tag**, bump the app dependency.
+
+Alternatively, vendor
+[`android/htmleditor/…/HtmlView.kt`](android/htmleditor/src/main/java/com/smartiv/htmleditor/HtmlView.kt)
+and copy stylesheets manually:
 
 ```bash
 npm run build
@@ -451,9 +470,9 @@ cp dist/smartiv-tv.css app/src/main/assets/smartiv/tv.css
 ```kotlin
 HtmlView(
     htmlContent = screen.html,
-    theme = screen.theme,       // "light" | "paper" | "dark" | "midnight" | "brand"
-    rootFontSize = 16.sp,       // 1080p; ~13.sp for 720p panels
-    safeArea = "5%"             // only if this view is full-bleed
+    theme = screen.theme,
+    rootFontSize = 16.sp,
+    safeArea = "5%"
 )
 ```
 

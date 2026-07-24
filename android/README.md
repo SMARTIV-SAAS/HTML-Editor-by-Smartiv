@@ -1,23 +1,34 @@
 # Android TV viewer
 
-How to render content authored in the Smartiv HTML Editor on an Android TV
-player, using the two Kotlin files in this folder:
+> **Preferred install:** consume the AAR from JitPack — see **[JITPACK.md](JITPACK.md)**.  
+> Pushing `main` alone does **not** update apps; publish a **new Git tag**, wait for a green JitPack build, then bump the dependency version in the player app.
 
-| File | Role |
+The source for the player lives in the Gradle module:
+
+| Path | Role |
 |---|---|
-| `HtmlView.kt` | Jetpack Compose `@Composable` that wraps a `WebView` and builds the full HTML document |
-| `FontCache.kt` | disk cache + `shouldInterceptRequest` handler for self-hosted fonts (optional) |
+| `htmleditor/…/HtmlView.kt` | Jetpack Compose `@Composable` WebView document builder |
+| `htmleditor/…/FontCache.kt` | Disk cache + `shouldInterceptRequest` for remote fonts |
+| `htmleditor/src/main/assets/smartiv/` | Generated `tv.css` + `fonts.css` (via `npm run build:android-assets`) |
+| `htmleditor/src/main/assets/fonts/` | Bundled `.ttf` files |
 
-The viewer renders **both** formats during a migration: new Smartiv content and
-existing legacy content, chosen automatically from a marker in the HTML — see
-[Coexisting with legacy content](#8-coexisting-with-legacy-content).
+```kotlin
+implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.1")
+```
+
+```kotlin
+import com.smartiv.htmleditor.HtmlView
+import com.smartiv.htmleditor.ScreenTheme
+```
+
+The sections below remain useful for understanding assets, themes, and coexistence with legacy Quill HTML. Skip the “copy Kotlin into your app” path if you use JitPack.
 
 ---
 
-## 1. Prerequisites
+## 1. Prerequisites (when not using the AAR)
 
 ```kotlin
-// build.gradle.kts (app module)
+// build.gradle.kts (app module) — only if you vendor sources instead of JitPack
 dependencies {
     implementation("androidx.webkit:webkit:1.16.0")
     implementation("androidx.compose.ui:ui")
@@ -26,33 +37,32 @@ dependencies {
 }
 ```
 
-- **minSdk 21+.** The renderer is Android System WebView (Chromium), updated via
-  Play Store independently of the OS.
+- **minSdk 23+** for the published library module (WebView is System WebView / Chromium).
 - A device **without** a WebView provider (some very cheap TV boxes) throws on
   `WebView(context)`. Guard with `WebViewCompat.getCurrentWebViewPackage(context)`
   if you target such hardware.
 
-Both Kotlin files declare `package core.components.composables` — change it to
-match your project, or move the files under that path.
+Library package: `com.smartiv.htmleditor`.
 
 ---
 
-## 2. Copy the generated stylesheets into assets
+## 2. Stylesheets & fonts
 
-The layout and font CSS is generated from the editor project, so the TV renders
-from the exact same rules the operator saw:
+With JitPack, CSS and fonts are **inside the AAR**. After changing `src/fonts.js` or TV CSS in the editor repo:
 
 ```bash
-# in the editor repo
+npm run build:android-assets
+# commit android/htmleditor/src/main/assets/… then tag a new version
+```
+
+Manual copy into an app (legacy / non-JitPack) still works:
+
+```bash
 npm install
 npm run build
-
-# copy the two generated files
 cp dist/smartiv-tv.css     app/src/main/assets/smartiv/tv.css
 cp dist/smartiv-fonts.css  app/src/main/assets/smartiv/fonts.css
 ```
-
-Then drop the bundled font files alongside:
 
 ```
 app/src/main/assets/
