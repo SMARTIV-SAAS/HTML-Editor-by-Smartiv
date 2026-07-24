@@ -1,0 +1,457 @@
+/* Editor chrome. Content styling lives in tvCss.js and is injected at runtime. */
+
+.sv-editor {
+  --sv-ui-bg: #ffffff;
+  --sv-ui-surface: #f7f9fc;
+  --sv-ui-fg: #1a2231;
+  --sv-ui-muted: #67748a;
+  --sv-ui-border: #e2e7ef;
+  --sv-ui-border-strong: #cdd5e1;
+  --sv-ui-accent: #0b63c5;
+  --sv-ui-accent-fg: #ffffff;
+  --sv-ui-active: #e8f0fd;
+  --sv-ui-active-fg: #0b57b0;
+  --sv-ui-hover: #eef1f6;
+  --sv-ui-radius: 10px;
+  --sv-ui-radius-sm: 7px;
+  --sv-ui-shadow: 0 1px 2px rgba(20, 30, 48, .04), 0 6px 20px -8px rgba(20, 30, 48, .12);
+
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--sv-ui-border);
+  border-radius: var(--sv-ui-radius);
+  background: var(--sv-ui-bg);
+  color: var(--sv-ui-fg);
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  box-shadow: var(--sv-ui-shadow);
+  overflow: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+.sv-editor--dark {
+  --sv-ui-bg: #12161d;
+  --sv-ui-surface: #171c25;
+  --sv-ui-fg: #e6edf6;
+  --sv-ui-muted: #8b96a8;
+  --sv-ui-border: #262d38;
+  --sv-ui-border-strong: #333b47;
+  --sv-ui-active: #16324f;
+  --sv-ui-active-fg: #79b4f5;
+  --sv-ui-hover: #1d2531;
+  --sv-ui-shadow: 0 1px 2px rgba(0, 0, 0, .3), 0 8px 24px -10px rgba(0, 0, 0, .6);
+}
+
+/* -------------------------------------------------------------------- toolbar */
+.sv-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 10px;
+  padding: 8px 10px;
+  border-bottom: 1px solid var(--sv-ui-border);
+  background:
+    linear-gradient(var(--sv-ui-surface), color-mix(in srgb, var(--sv-ui-surface) 88%, var(--sv-ui-border)));
+}
+
+/* Clustered controls: a subtle divider sits in the gap between clusters. */
+.sv-toolbar__group {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  position: relative;
+}
+.sv-toolbar__group + .sv-toolbar__group::before {
+  content: "";
+  position: absolute;
+  left: -6px;
+  top: 4px;
+  bottom: 4px;
+  width: 1px;
+  background: var(--sv-ui-border);
+}
+
+/* Retained for any layout still emitting explicit separators. */
+.sv-toolbar__sep { width: 1px; align-self: stretch; margin: 4px 4px; background: var(--sv-ui-border); }
+
+.sv-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 32px;
+  height: 32px;
+  padding: 0 7px;
+  border: 1px solid transparent;
+  border-radius: var(--sv-ui-radius-sm);
+  background: transparent;
+  color: var(--sv-ui-fg);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: background .12s ease, color .12s ease, border-color .12s ease, box-shadow .12s ease;
+}
+.sv-btn:hover:not(:disabled) { background: var(--sv-ui-hover); }
+.sv-btn:active:not(:disabled) { transform: translateY(.5px); }
+.sv-btn:focus-visible {
+  outline: none;
+  border-color: var(--sv-ui-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sv-ui-accent) 22%, transparent);
+}
+.sv-btn--active {
+  background: var(--sv-ui-active);
+  color: var(--sv-ui-active-fg);
+  border-color: color-mix(in srgb, var(--sv-ui-accent) 30%, transparent);
+}
+.sv-btn:disabled { opacity: .4; cursor: default; }
+
+.sv-btn__ico {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.sv-btn__ico svg { display: block; }
+/* Legacy text glyphs, so they sit at a consistent optical size. */
+.sv-btn__ico--glyph { font-size: 13px; min-width: 18px; }
+
+/* -------------------------------------------------------------------- selects */
+.sv-select {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+.sv-select select {
+  appearance: none;
+  -webkit-appearance: none;
+  height: 32px;
+  padding: 0 26px 0 10px;
+  border: 1px solid var(--sv-ui-border-strong);
+  border-radius: var(--sv-ui-radius-sm);
+  background: var(--sv-ui-bg);
+  color: var(--sv-ui-fg);
+  font: inherit;
+  font-size: 13px;
+  cursor: pointer;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+.sv-select select:hover { border-color: var(--sv-ui-accent); }
+.sv-select select:focus-visible {
+  outline: none;
+  border-color: var(--sv-ui-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sv-ui-accent) 22%, transparent);
+}
+.sv-select__caret {
+  position: absolute;
+  right: 8px;
+  color: var(--sv-ui-muted);
+  pointer-events: none;
+}
+.sv-select.is-disabled { opacity: .45; }
+.sv-select.is-disabled select { cursor: default; }
+
+/* ---------------------------------------------------------------- color popup */
+.sv-color { position: relative; }
+.sv-btn--color { flex-direction: column; gap: 2px; padding-top: 3px; }
+.sv-color__bar {
+  width: 16px;
+  height: 3px;
+  border-radius: 2px;
+  box-shadow: inset 0 0 0 1px rgba(0, 0, 0, .12);
+}
+.sv-color__panel {
+  position: absolute;
+  z-index: 20;
+  top: calc(100% + 6px);
+  left: 0;
+  display: grid;
+  grid-template-columns: repeat(8, 24px);
+  gap: 5px;
+  padding: 10px;
+  border: 1px solid var(--sv-ui-border);
+  border-radius: var(--sv-ui-radius);
+  background: var(--sv-ui-bg);
+  box-shadow: 0 12px 32px -8px rgba(20, 30, 48, .35);
+}
+.sv-color__swatch {
+  width: 24px;
+  height: 24px;
+  border: 1px solid rgba(0, 0, 0, .14);
+  border-radius: 5px;
+  cursor: pointer;
+  padding: 0;
+  transition: transform .1s ease, box-shadow .1s ease;
+}
+.sv-color__swatch:hover { transform: scale(1.12); }
+.sv-color__swatch.is-current {
+  box-shadow: 0 0 0 2px var(--sv-ui-bg), 0 0 0 4px var(--sv-ui-accent);
+}
+.sv-color__custom {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-top: 2px;
+  font-size: 12px;
+  color: var(--sv-ui-muted);
+}
+.sv-color__custom input[type="color"] {
+  width: 46px;
+  height: 26px;
+  padding: 0;
+  border: 1px solid var(--sv-ui-border);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.sv-color__reset {
+  grid-column: 1 / -1;
+  height: 26px;
+  border: 1px solid var(--sv-ui-border);
+  border-radius: 4px;
+  background: transparent;
+  color: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+/* ------------------------------------------------------------------- surface */
+.sv-surface { position: relative; display: flex; flex-direction: column; }
+
+.sv-content {
+  min-height: var(--sv-min-height, 320px);
+  max-height: var(--sv-max-height, 60vh);
+  overflow: auto;
+  padding: 20px 24px;
+  outline: none;
+}
+.sv-content:empty::before,
+.sv-content[data-empty="true"]::before {
+  content: attr(data-placeholder);
+  color: var(--sv-ui-muted);
+  pointer-events: none;
+}
+
+/* WYSIWYG surface mirrors the TV background so contrast is honest. */
+.sv-content--tv {
+  background: var(--sv-bg, #ffffff);
+  color: var(--sv-color, #14181d);
+}
+
+.sv-source {
+  min-height: var(--sv-min-height, 320px);
+  max-height: var(--sv-max-height, 60vh);
+  padding: 16px 20px;
+  border: 0;
+  outline: none;
+  resize: vertical;
+  background: var(--sv-ui-bg);
+  color: var(--sv-ui-fg);
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 13px;
+  line-height: 1.6;
+  tab-size: 2;
+}
+
+/* ---------------------------------------------------------------- TV preview */
+.sv-preview { padding: 16px; background: #0d1117; }
+.sv-preview__frame {
+  width: 1920px;
+  height: 1080px;
+  transform-origin: top left;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 0 0 4px #000, 0 12px 40px rgba(0, 0, 0, .6);
+}
+.sv-preview__stage {
+  width: 1920px;
+  height: 1080px;
+  border: 0;
+  display: block;
+}
+.sv-preview__safe {
+  position: absolute;
+  inset: 5%;
+  border: 2px dashed rgba(255, 82, 82, .85);
+  pointer-events: none;
+}
+.sv-preview__safe::after {
+  content: "safe area 5%";
+  position: absolute;
+  top: -1.6em;
+  left: 0;
+  color: rgba(255, 82, 82, .95);
+  font-size: 18px;
+}
+.sv-preview__scaler { overflow: hidden; }
+
+/* --------------------------------------------------------------------- dialog */
+.sv-dialog__backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  background: rgba(9, 14, 22, .55);
+}
+.sv-dialog {
+  width: min(440px, 92vw);
+  padding: 20px;
+  border-radius: 12px;
+  background: var(--sv-ui-bg, #fff);
+  color: var(--sv-ui-fg, #1c2430);
+  box-shadow: 0 24px 60px rgba(0, 0, 0, .35);
+}
+.sv-dialog h3 { margin: 0 0 14px; font-size: 17px; }
+.sv-dialog__field { display: block; margin-bottom: 12px; font-size: 13px; }
+.sv-dialog__field span { display: block; margin-bottom: 4px; color: var(--sv-ui-muted); }
+.sv-dialog__field input[type="text"] {
+  width: 100%;
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--sv-ui-border);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.sv-dialog__actions { display: flex; justify-content: flex-end; gap: 8px; margin-top: 18px; }
+.sv-dialog__actions button {
+  height: 34px;
+  padding: 0 16px;
+  border: 1px solid var(--sv-ui-border);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+.sv-dialog__actions .is-primary {
+  background: var(--sv-ui-accent);
+  border-color: var(--sv-ui-accent);
+  color: #fff;
+}
+
+/* --------------------------------------------------------------------- footer */
+.sv-status__notice {
+  flex: 1;
+  text-align: center;
+  color: #b4462b;
+}
+
+.sv-status {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  padding: 7px 14px;
+  border-top: 1px solid var(--sv-ui-border);
+  background: var(--sv-ui-surface);
+  color: var(--sv-ui-muted);
+  font-size: 12px;
+  letter-spacing: .01em;
+}
+.sv-status > span:last-child {
+  font-variant-numeric: tabular-nums;
+  text-transform: uppercase;
+  font-size: 11px;
+  letter-spacing: .06em;
+  color: var(--sv-ui-muted);
+}
+
+/* ---------------------------------------------------------------- font manager */
+.sv-fonts {
+  display: grid;
+  gap: 20px;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  color: var(--sv-ui-fg, #1c2430);
+}
+.sv-fonts--empty {
+  padding: 16px;
+  border: 1px dashed var(--sv-ui-border, #d8dee7);
+  border-radius: 8px;
+  font-size: 14px;
+}
+.sv-fonts__panel {
+  padding: 18px 20px;
+  border: 1px solid var(--sv-ui-border, #d8dee7);
+  border-radius: 10px;
+  background: var(--sv-ui-bg, #fff);
+}
+.sv-fonts__panel h2 { margin: 0 0 6px; font-size: 15px; }
+.sv-fonts__count {
+  margin-left: 6px;
+  padding: 1px 7px;
+  border-radius: 10px;
+  background: var(--sv-ui-active, #e4efff);
+  font-size: 12px;
+  font-weight: 500;
+}
+.sv-fonts__hint { margin: 0 0 14px; color: var(--sv-ui-muted, #64748b); font-size: 13px; }
+
+.sv-fonts__form { display: grid; gap: 12px; }
+.sv-fonts__row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.sv-fonts__field { display: grid; gap: 4px; font-size: 13px; }
+.sv-fonts__field > span { color: var(--sv-ui-muted, #64748b); }
+.sv-fonts__field em { font-style: normal; opacity: .7; }
+.sv-fonts__field small { color: var(--sv-ui-muted, #64748b); font-size: 11px; }
+.sv-fonts__field input[type="text"],
+.sv-fonts__field select {
+  height: 34px;
+  padding: 0 10px;
+  border: 1px solid var(--sv-ui-border, #d8dee7);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+}
+.sv-fonts__submit {
+  justify-self: start;
+  height: 36px;
+  padding: 0 18px;
+  border: 0;
+  border-radius: 6px;
+  background: var(--sv-ui-accent, #0b63c5);
+  color: #fff;
+  font: inherit;
+  cursor: pointer;
+}
+.sv-fonts__submit:disabled { opacity: .45; cursor: default; }
+
+.sv-fonts__msg { margin: 12px 0 0; padding: 9px 12px; border-radius: 6px; font-size: 13px; }
+.sv-fonts__msg.is-ok { background: #e7f6ec; color: #17603a; }
+.sv-fonts__msg.is-warn { background: #fdf3e0; color: #7a5312; }
+.sv-fonts__msg.is-error { background: #fdeceb; color: #96231d; }
+
+.sv-fonts__list { margin: 0; padding: 0; list-style: none; display: grid; gap: 10px; }
+.sv-fonts__list > li {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: center;
+  gap: 14px;
+  padding: 10px 12px;
+  border: 1px solid var(--sv-ui-border, #d8dee7);
+  border-radius: 8px;
+}
+.sv-fonts__list--compact > li { grid-template-columns: 1fr auto; }
+.sv-fonts__sample { font-size: 22px; line-height: 1.3; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sv-fonts__meta { display: grid; gap: 2px; text-align: right; font-size: 12px; }
+.sv-fonts__meta span { color: var(--sv-ui-muted, #64748b); }
+.sv-fonts__remove {
+  height: 30px;
+  padding: 0 12px;
+  border: 1px solid var(--sv-ui-border, #d8dee7);
+  border-radius: 6px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.sv-fonts__remove:hover { background: #fdeceb; border-color: #e3a9a4; color: #96231d; }
+
+@media (max-width: 620px) {
+  .sv-fonts__row { grid-template-columns: 1fr; }
+  .sv-fonts__list > li { grid-template-columns: 1fr; }
+  .sv-fonts__meta { text-align: left; }
+}

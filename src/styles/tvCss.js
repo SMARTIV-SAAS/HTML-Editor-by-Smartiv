@@ -1,0 +1,148 @@
+/**
+ * The content stylesheet. Single source of truth: it styles the editable area
+ * inside the CMS *and* gets inlined into the exported Android TV document, so
+ * what the operator sees is what the panel renders.
+ */
+export const TV_CSS = String.raw`
+/* ------------------------------------------------------------ TV base layer */
+.sv-tv {
+  margin: 0;
+  min-height: 100vh;
+  background: var(--sv-bg, #ffffff);
+  color: var(--sv-color, #14181d);
+  font-family: var(--sv-font, Roboto, system-ui, sans-serif);
+  /* TV panels are viewed from ~3m; 1.5rem is the practical floor at 1080p. */
+  font-size: 1.5rem;
+  line-height: 1.35;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+  /* WebView autosizes text on wide viewports; that would break the rem scale. */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* Overscan: consumer TVs crop up to 5% of each edge. */
+.sv-tv__safe {
+  box-sizing: border-box;
+  padding: var(--sv-safe-area, 5%);
+  min-height: 100vh;
+}
+
+.sv-content h1, .sv-tv h1 { font-size: 4rem; line-height: 1.1; margin: 0 0 .4em; font-weight: 700; }
+.sv-content h2, .sv-tv h2 { font-size: 3rem; line-height: 1.15; margin: 0 0 .4em; font-weight: 700; }
+.sv-content h3, .sv-tv h3 { font-size: 2.25rem; margin: 0 0 .4em; font-weight: 600; }
+.sv-content p,  .sv-tv p  { margin: 0 0 .65em; }
+.sv-content blockquote, .sv-tv blockquote {
+  margin: 0 0 .8em; padding-left: .8em; border-left: .2em solid currentColor; opacity: .9;
+}
+.sv-content img, .sv-tv img { max-width: 100%; height: auto; }
+.sv-content hr, .sv-tv hr {
+  border: 0; border-top: 2px solid currentColor; opacity: .35; margin: .8em 0;
+}
+
+/* ------------------------------------------------------- field list (label:) */
+/*
+ * Two grid columns: label + value. The colon is generated content pinned to the
+ * far edge of the label column, so every colon shares one x coordinate no
+ * matter how long each label is. That is the whole trick.
+ */
+.sv-fields {
+  display: grid;
+  grid-template-columns: var(--sv-label-width, max-content) 1fr;
+  column-gap: var(--sv-field-gap, .6em);
+  row-gap: var(--sv-field-row-gap, .35em);
+  margin: 0 0 .8em;
+  align-items: baseline;
+}
+
+.sv-fields > dt {
+  display: flex;
+  justify-content: space-between;   /* pushes the colon to the column edge */
+  align-items: baseline;
+  gap: .5em;
+  margin: 0;
+  font-weight: 700;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.sv-fields > dd {
+  margin: 0;
+  min-width: 0;
+  /* overflow-wrap:anywhere needs Chrome 80; the older keyword stays as the
+     fallback for Android TV units on an outdated WebView provider. */
+  word-break: break-word;
+  overflow-wrap: anywhere;
+}
+
+.sv-fields[data-sv-colon="align"] > dt::after,
+.sv-fields[data-sv-colon="right"] > dt::after,
+.sv-fields[data-sv-colon="tight"] > dt::after,
+.sv-fields:not([data-sv-colon]) > dt::after {
+  content: ":";
+  font-weight: 700;
+}
+
+/* Exported markup carries a real <span class="sv-colon">, so the generated one
+   must stand down or the screen shows two colons. */
+.sv-fields[data-sv-colon-baked] > dt::after { content: none; }
+.sv-fields > dt > .sv-colon { font-weight: 700; }
+
+/* Labels right-aligned; colon rides along behind the text. */
+.sv-fields[data-sv-colon="right"] > dt { justify-content: flex-end; gap: 0; }
+/* Colon glued to the label — the un-aligned legacy look. */
+.sv-fields[data-sv-colon="tight"] > dt { justify-content: flex-start; gap: 0; }
+.sv-fields[data-sv-colon="none"]  > dt::after { content: none; }
+
+/* Long labels stop being nowrap once a fixed width is pinned. */
+.sv-fields[style*="--sv-label-width"] > dt { white-space: normal; }
+
+/* -------------------------------------------------------------- split panels */
+.sv-panels {
+  display: grid;
+  grid-template-columns: repeat(var(--sv-panel-columns, 2), 1fr);
+  gap: var(--sv-panel-gap, 2.5rem);
+  align-items: start;
+  margin: 0 0 1rem;
+}
+.sv-panels[data-sv-columns="1"] { --sv-panel-columns: 1; }
+.sv-panels[data-sv-columns="3"] { --sv-panel-columns: 3; }
+
+/* Single panel: no divider, and a measure cap so lines stay readable at 3m. */
+.sv-panels[data-sv-columns="1"] > .sv-panel {
+  border-right: 0;
+  padding-right: 0;
+  max-width: var(--sv-panel-measure, 34em);
+}
+
+.sv-panel {
+  min-width: 0;
+  padding: 0 var(--sv-panel-gap, 2.5rem) 0 0;
+  /* --sv-rule comes from the active theme so the divider reads on any bg. */
+  border-right: 2px solid var(--sv-rule, rgba(0, 0, 0, .18));
+}
+.sv-panel:last-child { border-right: 0; padding-right: 0; }
+
+.sv-panel__title {
+  font-size: 3rem;
+  line-height: 1.1;
+  margin: 0 0 .5em;
+  font-weight: 700;
+  letter-spacing: .01em;
+}
+
+/* -------------------------------------------------------------------- tables */
+.sv-table { width: 100%; border-collapse: collapse; margin: 0 0 .8em; }
+.sv-table th, .sv-table td {
+  border: 2px solid var(--sv-rule, rgba(0, 0, 0, .18));
+  padding: .4em .6em;
+  text-align: left;
+  vertical-align: top;
+}
+.sv-table th { font-weight: 700; background: var(--sv-rule-soft, rgba(0, 0, 0, .05)); }
+
+/* -------------------------------------------------------------- 720p panels */
+@media (max-width: 1366px) {
+  :root { font-size: 13px; }
+}
+`;
