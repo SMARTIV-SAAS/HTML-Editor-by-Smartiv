@@ -30,10 +30,10 @@ import androidx.compose.ui.graphics.Color as ComposeColor
 
 /*
  * Renders content authored in the Smartiv HTML Editor, and still renders the
- * older Quill-authored content unchanged.
+ * older legacy-authored content unchanged.
  *
  * What was wrong before: the composable wrapped the stored fragment in its own
- * document with only the Quill stylesheet. The editor's field-list layout and
+ * document with only the legacy stylesheet. The editor's field-list layout and
  * its colons live in tv.css — without it the labels stack, the values indent,
  * and every colon vanishes, because the colon is `dt::after` generated content.
  *
@@ -277,7 +277,7 @@ private fun isSmartivContent(html: String): Boolean =
     html.contains("data-sv-doc") ||
         html.contains("sv-fields") || html.contains("sv-panels") || html.contains("sv-panel")
 
-/** Format version, or 0 for Quill-authored content. Useful for future migrations. */
+/** Format version, or 0 for legacy-authored content. Useful for future migrations. */
 private val DOC_VERSION = Regex("""data-sv-doc="(\d+)"""")
 
 private fun documentVersion(html: String): Int =
@@ -348,7 +348,7 @@ $body
 }
 
 /**
- * Quill-era rules, kept so existing content renders exactly as before.
+ * Legacy-era rules, kept so existing content renders exactly as before.
  *
  * @font-face and the .ql-font-* map now live in the generated fonts.css, which
  * is inlined ahead of this block — one registry feeds both the editor's font

@@ -14,7 +14,7 @@ import { writeFile, mkdir } from 'node:fs/promises';
 import { fileURLToPath } from 'node:url';
 import { dirname, join } from 'node:path';
 import { TV_CSS } from '../src/styles/tvCss.js';
-import { FONTS, fontFaceCss, quillFontClassCss } from '../src/fonts.js';
+import { FONTS, fontFaceCss, legacyFontClassCss } from '../src/fonts.js';
 
 const root = dirname(dirname(fileURLToPath(import.meta.url)));
 const distDir = join(root, 'dist');
@@ -29,9 +29,9 @@ const fontsCss = [
   banner('src/fonts.js'),
   fontFaceCss(ANDROID_FONT_BASE),
   '',
-  '/* Legacy Quill class map. .ql-font-greatvibes is new: the original stylesheet',
+  '/* Legacy class map. .ql-font-greatvibes is new: the original stylesheet',
   '   declared .ql-font-monsieur twice and the second rule shadowed Great Vibes. */',
-  quillFontClassCss()
+  legacyFontClassCss()
 ].join('\n');
 
 await mkdir(distDir, { recursive: true });

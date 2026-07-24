@@ -137,12 +137,12 @@ export function fontFaceCss({ bundledBase, remoteBase } = {}, fonts = FONTS) {
 }
 
 /**
- * Legacy Quill class map. Existing content carries `class="ql-font-<id>"`, so
+ * Legacy class map. Existing content carries `class="ql-font-<id>"`, so
  * these must keep resolving. `.ql-font-greatvibes` is new: the original
  * stylesheet declared `.ql-font-monsieur` twice, and the second rule silently
  * shadowed the Great Vibes mapping.
  */
-export function quillFontClassCss(fonts = FONTS) {
+export function legacyFontClassCss(fonts = FONTS) {
   return fileFonts(fonts)
     .map((f) => `.ql-font-${f.id} { font-family: ${fontStack(f)}; }`)
     .join('\n');

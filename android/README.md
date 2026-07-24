@@ -9,8 +9,8 @@ player, using the two Kotlin files in this folder:
 | `FontCache.kt` | disk cache + `shouldInterceptRequest` handler for self-hosted fonts (optional) |
 
 The viewer renders **both** formats during a migration: new Smartiv content and
-existing Quill content, chosen automatically from a marker in the HTML — see
-[Coexisting with Quill](#coexisting-with-quill).
+existing legacy content, chosen automatically from a marker in the HTML — see
+[Coexisting with legacy content](#8-coexisting-with-legacy-content).
 
 ---
 
@@ -227,7 +227,7 @@ The CMS produces `remoteFontFaceCss` with the editor's
 
 ---
 
-## 8. Coexisting with Quill
+## 8. Coexisting with legacy content
 
 During the transition the same `html` column holds two formats. The editor
 stamps everything it saves:
@@ -240,7 +240,7 @@ stamps everything it saves:
 the stylesheet:
 
 - **Smartiv content** → `body.sv-tv` + `tv.css` + theme.
-- **Quill content** → `body.legacy` + the Quill `.ql-*` rules, rendered exactly
+- **Legacy content** → `body.legacy` + the `.ql-*` rules, rendered exactly
   as the old app did.
 
 The two never collide: the legacy `body` block is scoped to `.legacy`. Content
@@ -255,9 +255,9 @@ The combination to watch is **new content on an old player**: an old APK has no
 once but the fleet updates gradually, ship in this order:
 
 1. **Roll out this viewer first.** No content or CMS change. New players read both
-   formats; old players keep working on Quill content. This fills the fleet.
+   formats; old players keep working on legacy content. This fills the fleet.
 2. **Then** switch the CMS editor over and start authoring Smartiv content.
-3. Once telemetry shows the fleet is fully updated, remove the Quill CSS and the
+3. Once telemetry shows the fleet is fully updated, remove the legacy CSS and the
    class-name fallback.
 
 You need per-device APK-version telemetry to know when step 3 is safe.
@@ -287,4 +287,4 @@ against a backgrounded view.
 | Fonts never load | no `INTERNET` permission, or HTTP blocked | add the permission; allow cleartext for the CMS host if it is HTTP |
 | Blank after a while, comes back on reload | renderer process was killed (low-RAM box) | attach `WebViewCompat.setWebViewRenderProcessClient` and reload on `onRenderProcessUnresponsive` |
 | Text re-sizes oddly on a wide panel | WebView text autosizing | `HtmlView` sets `textZoom = 100` and `text-size-adjust:100%`; do not override `textZoom` |
-| Old Quill screen lost its fonts | `fonts.css` missing the `.ql-font-*` map | recopy `dist/smartiv-fonts.css` — it now includes the Quill class map |
+| Old legacy screen lost its fonts | `fonts.css` missing the `.ql-font-*` map | recopy `dist/smartiv-fonts.css` — it now includes the legacy class map |

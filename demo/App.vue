@@ -40,7 +40,7 @@ const welcomeFonts = ref([]);
 <template>
   <h1 style="font-size:20px;margin:0 0 4px">Smartiv HTML Editor</h1>
   <p style="margin:0 0 14px;color:#5b6773;font-size:14px">
-    Standalone editor plugin — no TinyMCE. Two editors below share one font
+    Two editors below share one font
     catalogue: upload on the <strong>Fonts</strong> tab and both dropdowns pick it
     up immediately.
   </p>

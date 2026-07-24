@@ -1,8 +1,8 @@
 /**
  * Document format marker.
  *
- * During the transition the same column holds two kinds of HTML: Quill-authored
- * content written by the old CMS, and Smartiv-authored content written by this
+ * During the transition the same column holds two kinds of HTML: legacy content
+ * written by the old CMS, and Smartiv-authored content written by this
  * editor. The player has to tell them apart to pick the right stylesheet, and
  * guessing from class names is brittle — a legacy document could contain
  * "sv-fields" by coincidence, and a Smartiv document that happens to be a plain

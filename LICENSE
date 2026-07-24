@@ -58,7 +58,7 @@ Copyright © 2026 Smartiv (https://www.smartiv.tv). All rights reserved.
 8. Third-party components
 
    The Software depends on third-party packages at build time (see
-   package.json); those remain under their own licenses. No TinyMCE, CKEditor
-   or Quill source code is included or redistributed in this repository.
+   package.json); those remain under their own licenses. No third-party editor
+   source code is included or redistributed in this repository.
 
 For licensing enquiries, contact Smartiv at https://www.smartiv.tv

@@ -3,28 +3,28 @@
 **By [Smartiv](https://www.smartiv.tv)** · © 2026 Smartiv · [Proprietary license](LICENSE)
 
 A self-contained HTML editor plugin for Vue 3, built for Android TV signage
-output. No TinyMCE, no CKEditor, no third-party editor runtime — the core,
-the plugins and the sanitizer are all written here.
-
-The TinyMCE checkout in `../reference-tinymce` is architectural reference only
-(plugin registry + command table), never a dependency.
+output. The core, the plugins and the sanitizer are all written here — there is
+no editor runtime dependency, and the shipped bundle is ~16 KB gzipped.
 
 > **Rendering on Android TV?** See [`android/README.md`](android/README.md) for
 > the full player integration guide — asset setup, the Compose `HtmlView`, font
-> caching, and seamless coexistence with existing Quill content.
+> caching, and seamless coexistence with existing legacy content.
 
 ---
 
-## Why not an off-the-shelf editor
+## Built for signage
 
-| Signage requirement | Generic editor | This editor |
-|---|---|---|
-| `Event:` / `Host:` / `Time:` with colons on one line | operators pad with spaces, never lines up | **Field List** block, colon placed by CSS grid |
-| Text colour must survive a background change | colour and theme fight each other | colour is inline and independent of the theme |
-| Output rendered by an Android TV WebView | needs external CSS and web fonts | one file, inline CSS, zero network requests |
-| TV overscan crops 5% of every edge | no such concept | safe area + 1920×1080 preview |
-| Readable from three metres | mixed px units | `rem` scale driven by a single root font-size |
-| Bundle | 500 KB+ | ~16 KB gzipped, no runtime dependency |
+A room display is not a web page. Each of these is a first-class feature rather
+than something an operator has to work around:
+
+| Signage requirement | How it is solved |
+|---|---|
+| `Event:` / `Host:` / `Time:` with colons on one line | **Field List** block — the colon is placed by CSS grid, never typed |
+| Text colour must survive a background change | colour is inline and independent of the theme |
+| Output rendered by an Android TV WebView | one file, inline CSS, zero network requests |
+| TV overscan crops 5% of every edge | safe area plus a 1920×1080 preview |
+| Readable from three metres | `rem` scale driven by a single root font-size |
+| Operators add their own brand fonts | upload once, available in every editor in the CMS |
 
 ---
 
@@ -234,7 +234,7 @@ Reducing the column count removes the rightmost panel and its content.
 
 ---
 
-## Coexisting with Quill during the transition
+## Coexisting with legacy content during the transition
 
 The editor stamps every document it saves:
 
@@ -254,8 +254,8 @@ the next save. Set `options.documentMarker: false` to store bare fragments.
 ```js
 import { isSmartivHtml, documentVersion } from '@smartiv/html-editor';
 
-isSmartivHtml(row.html)     // false for Quill content
-documentVersion(row.html)   // 1 for Smartiv, 0 for Quill
+isSmartivHtml(row.html)     // false for legacy content
+documentVersion(row.html)   // 1 for Smartiv, 0 for legacy
 ```
 
 `HtmlView.kt` reads the same marker and picks the stylesheet from it, falling
@@ -264,13 +264,13 @@ Drop that fallback once no unmarked content is left.
 
 Why not just look for `sv-fields`: a Smartiv document that happens to be a plain
 paragraph carries no Smartiv class at all, and the heuristic would misfile it as
-Quill. The marker is on every document regardless of what is inside it.
+legacy. The marker is on every document regardless of what is inside it.
 
 ### The combination to watch
 
 |  | Old player | New player |
 |---|---|---|
-| **Quill content** | works today | handled — `body.legacy` + the Quill rules |
+| **Legacy content** | works today | handled — `body.legacy` + the legacy rules |
 | **Smartiv content** | **breaks** — no tv.css, so field lists stack and colons vanish | handled |
 
 Only the bottom-left cell is a problem, and it is the normal state of a
@@ -417,7 +417,7 @@ feeds three places at build time:
   previews the real face),
 - `dist/smartiv-fonts.css`, read by the player from
   `assets/smartiv/fonts.css` — it carries both the `@font-face` rules and the
-  `.ql-font-*` classes legacy Quill content depends on.
+  `.ql-font-*` classes legacy content depends on.
 
 Adding a font later:
 
@@ -438,9 +438,9 @@ inline in existing HTML, so renaming it orphans old content.
 
 ### Rendering inside an existing Compose player
 
-If the app already wraps stored fragments in its own document (the usual Quill
+If the app already wraps stored fragments in its own document (the usual legacy
 setup), use [`android/HtmlView.kt`](android/HtmlView.kt) — a drop-in replacement
-that keeps legacy Quill content rendering exactly as before while adding the
+that keeps legacy content rendering exactly as before while adding the
 Smartiv path:
 
 ```bash
@@ -459,7 +459,7 @@ HtmlView(
 
 `body` gets `class="sv-tv"` and the content is wrapped in `.sv-tv__safe` when the
 HTML carries the editor's hooks (`sv-fields` / `sv-panels`); otherwise it falls
-through to `body.legacy` and the Quill rules. The two stylesheets never collide
+through to `body.legacy` and the legacy rules. The two stylesheets never collide
 because the legacy `body` block is scoped to that class.
 
 ### Raw WebView
@@ -595,8 +595,7 @@ permission from Smartiv.
 The editor stamps each document it saves with `data-sv-doc="1"`. That is a
 **format marker**, not a watermark — the player reads it to choose the right
 stylesheet, and it carries no branding. See
-[Coexisting with Quill](#coexisting-with-quill).
+[Coexisting with legacy content](#coexisting-with-legacy-content-during-the-transition).
 
-Third-party note: the TinyMCE checkout referenced during development was
-architectural reference only. No TinyMCE, CKEditor or Quill code is included or
-redistributed here.
+Third-party note: no third-party editor code is included or redistributed here.
+The build-time dependencies in `package.json` remain under their own licenses.
