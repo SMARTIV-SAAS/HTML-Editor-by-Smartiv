@@ -16,6 +16,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/emit-tv-css.mjs",
+    "build:android-assets": "npm run build && node scripts/sync-android-assets.mjs",
     "build:tvcss": "node scripts/emit-tv-css.mjs",
     "preview": "vite preview"
   },

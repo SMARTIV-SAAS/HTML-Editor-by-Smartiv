@@ -1,4 +1,4 @@
-package core.components.composables
+package com.smartiv.htmleditor
 
 import android.content.Context
 import android.net.Uri

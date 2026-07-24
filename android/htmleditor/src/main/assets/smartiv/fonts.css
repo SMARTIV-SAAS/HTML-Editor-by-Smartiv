@@ -1,0 +1,19 @@
+/* Generated from src/fonts.js — do not edit by hand.
+   Copy to app/src/main/assets/smartiv/ */
+
+
+
+/* Legacy class map. .ql-font-greatvibes is new: the original stylesheet
+   declared .ql-font-monsieur twice and the second rule shadowed Great Vibes. */
+.ql-font-roboto { font-family: "Roboto", sans-serif; }
+.ql-font-montserrat { font-family: "Montserrat", sans-serif; }
+.ql-font-lexend { font-family: "LexendDeca", sans-serif; }
+.ql-font-funnel { font-family: "FunnelSans", sans-serif; }
+.ql-font-newsreader { font-family: "Newsreader", serif; }
+.ql-font-monbaiti { font-family: "Monbaiti", sans-serif; }
+.ql-font-greatvibes { font-family: "GreatVibes", cursive; }
+.ql-font-monsieur { font-family: "Monsieur", cursive; }
+.ql-font-lavishly { font-family: "Lavishly", cursive; }
+.ql-font-luxurious { font-family: "Luxurious", cursive; }
+.ql-font-pacifico { font-family: "Pacifico", cursive; }
+.ql-font-zap { font-family: "Zap", cursive; }

@@ -11,3 +11,9 @@ dist/
 .DS_Store
 *.log
 npm-debug.log*
+
+# Android (local SDK path — do not commit)
+local.properties
+android/htmleditor/build/
+.gradle/
+build/
