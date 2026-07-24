@@ -1,5 +1,7 @@
 # @smartiv/html-editor
 
+**By [Smartiv](https://www.smartiv.tv)** · © Smartiv. All rights reserved.
+
 A self-contained HTML editor plugin for Vue 3, built for Android TV signage
 output. No TinyMCE, no CKEditor, no third-party editor runtime — the core,
 the plugins and the sanitizer are all written here.
@@ -574,3 +576,23 @@ preview with safe area, standalone export.
 
 Not included: images (deliberately — see above), find & replace, D-pad
 navigation inside the editor (the editor runs in the desktop CMS, not on the TV).
+
+---
+
+## Credits & ownership
+
+**Smartiv HTML Editor** — designed, built and maintained by **Smartiv**.
+
+- Website: [www.smartiv.tv](https://www.smartiv.tv)
+- Repository: `SMARTIV-SAAS/HTML-Editor-by-Smartiv`
+
+© Smartiv. All rights reserved.
+
+The editor stamps each document it saves with `data-sv-doc="1"`. That is a
+**format marker**, not a watermark — the player reads it to choose the right
+stylesheet, and it carries no branding. See
+[Coexisting with Quill](#coexisting-with-quill).
+
+Third-party note: the TinyMCE checkout referenced during development was
+architectural reference only. No TinyMCE, CKEditor or Quill code is included or
+redistributed here.
