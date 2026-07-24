@@ -124,7 +124,12 @@ export function fieldListPlugin(editor) {
         placeCaret(row.dd);
       } else {
         const nextDt = row.dd.nextElementSibling;
-        placeCaret(nextDt ?? appendRow(row.dt.parentNode, row.dd).dt);
+        if (nextDt) {
+          placeCaret(nextDt);
+        } else {
+          placeCaret(appendRow(row.dt.parentNode, row.dd).dt);
+          editor.commit(); // Tab created a row — record it now, no input fires.
+        }
       }
       return;
     }
@@ -145,9 +150,11 @@ export function fieldListPlugin(editor) {
         dl.after(p);
         if (!dl.querySelector('dt')) dl.remove();
         placeCaret(p);
+        editor.commit(); // ended the list — record the structural change.
         return;
       }
       placeCaret(appendRow(dl, row.dd).dt);
+      editor.commit(); // Enter created a row.
       return;
     }
 
@@ -157,8 +164,10 @@ export function fieldListPlugin(editor) {
     }
   });
 
-  // A label that already ends in ":" would render a double colon.
-  editor.events.on('change', () => {
+  // A label that already ends in ":" would render a double colon. Runs as a
+  // normalizer so the trimmed label is in the value the host stores, not one
+  // change behind it.
+  editor.addNormalizer(() => {
     for (const dl of editor.root.querySelectorAll(FIELD_SELECTOR)) {
       if (dl.getAttribute('data-sv-colon') === 'none') continue;
 

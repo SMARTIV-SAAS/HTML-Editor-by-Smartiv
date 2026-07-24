@@ -31,7 +31,9 @@ const swatches = computed(() => props.item.swatches ?? [
   '#e63946', '#d62828', '#f77f00', '#fcbf49', '#2a9d8f', '#43aa8b', '#0b63c5', '#1fbfd4'
 ]);
 
-const currentColor = computed(() => (props.tick, props.item.current?.() ?? '#000000'));
+// '' means no colour set (e.g. no highlight); the bar shows transparent while
+// the native picker still needs a concrete hex to seed with.
+const currentColor = computed(() => (props.tick, props.item.current?.() ?? ''));
 
 function run(value) {
   props.editor.execCommand(props.item.command, value);
@@ -92,7 +94,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
     >
       <span class="sv-btn__ico" v-if="useSvg" v-html="svg" />
       <span class="sv-btn__ico" v-else>{{ item.icon }}</span>
-      <span class="sv-color__bar" :style="{ background: currentColor }" />
+      <span class="sv-color__bar" :class="{ 'is-empty': !currentColor }" :style="{ background: currentColor || 'transparent' }" />
     </button>
     <div v-if="open" class="sv-color__panel">
       <button
@@ -107,7 +109,7 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
       />
       <label class="sv-color__custom">
         <span>Custom</span>
-        <input type="color" :value="currentColor" @change="pick($event.target.value)" />
+        <input type="color" :value="currentColor || '#000000'" @change="pick($event.target.value)" />
       </label>
       <button type="button" class="sv-color__reset" @click="clear">
         {{ item.resetLabel ?? 'Clear' }}

@@ -154,16 +154,21 @@ function currentStyle(editor, prop, options) {
   return match?.value ?? '';
 }
 
-/** Resolved colour at the caret, as a hex string for the native colour input. */
+/**
+ * Resolved colour at the caret as a hex string, or '' when there is none —
+ * a transparent background means "no highlight", and the toolbar should show an
+ * empty bar rather than a misleading solid black one.
+ */
 function currentColor(editor, prop) {
   const el = editor.selection.element();
-  if (!el) return '#000000';
+  if (!el) return '';
   return rgbToHex(getComputedStyle(el)[prop]);
 }
 
 function rgbToHex(value) {
-  const m = String(value).match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/i);
-  if (!m) return /^#[0-9a-f]{6}$/i.test(value) ? value : '#000000';
+  const m = String(value).match(/rgba?\((\d+),\s*(\d+),\s*(\d+)(?:,\s*([\d.]+))?\)/i);
+  if (!m) return /^#[0-9a-f]{6}$/i.test(value) ? value : '';
+  if (m[4] !== undefined && Number(m[4]) === 0) return ''; // fully transparent
   return '#' + [m[1], m[2], m[3]].map((n) => Number(n).toString(16).padStart(2, '0')).join('');
 }
 

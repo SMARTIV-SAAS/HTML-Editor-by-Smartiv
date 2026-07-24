@@ -46,6 +46,10 @@ export class Editor {
 
     this.shortcuts = new Map();
     this.plugins = new Map();
+    // DOM canonicalisers run before content is serialised, so what a plugin
+    // cleans up is reflected in the emitted value and the history snapshot —
+    // not one change behind.
+    this.normalizers = [];
     this._composing = false;
   }
 
@@ -90,6 +94,9 @@ export class Editor {
   setContent(html, { silent = false } = {}) {
     this.root.innerHTML = sanitizeHtml(unwrapDocument(html)) || '<p><br></p>';
     this._normalize();
+    // Canonicalise loaded content immediately (e.g. un-bake exported colons),
+    // even when silent, so getContent() right after setContent is already clean.
+    this._runNormalizers();
     if (!silent) this._changed({ force: true });
   }
 
@@ -97,6 +104,20 @@ export class Editor {
 
   addCommand(name, fn) {
     this.commands.set(name, fn);
+  }
+
+  /**
+   * Register a DOM canonicaliser. It runs (in registration order) before every
+   * content serialisation, so cleanups are never a change behind the value the
+   * host receives. Must be idempotent.
+   */
+  addNormalizer(fn) {
+    this.normalizers.push(fn);
+  }
+
+  /** Record a change after a plugin has mutated the DOM directly (no input event). */
+  commit() {
+    this._changed({ force: true });
   }
 
   execCommand(name, value) {
@@ -133,24 +154,60 @@ export class Editor {
   /* ------------------------------------------------------------------ internal */
 
   _changed({ force = false } = {}) {
+    // Canonicalise first, so the snapshot and the emitted value match the DOM.
+    this._runNormalizers();
     this.history.push({ force });
     this.events.emit('change', this.getContent());
     this.events.emit('selectionchange');
   }
 
-  /** Keep the document as a flat list of block elements; avoids stray text nodes. */
-  _normalize() {
-    if (!this.root.firstChild) {
-      this.root.innerHTML = '<p><br></p>';
-      return;
-    }
-    for (const node of [...this.root.childNodes]) {
-      if (node.nodeType === Node.TEXT_NODE && node.textContent.trim()) {
-        const p = document.createElement('p');
-        this.root.insertBefore(p, node);
-        p.appendChild(node);
+  _runNormalizers() {
+    for (const fn of this.normalizers) {
+      try {
+        fn(this);
+      } catch (err) {
+        console.warn('[smartiv-editor] normalizer threw', err);
       }
     }
+  }
+
+  /**
+   * Keep the document as a flat list of block elements.
+   *
+   * Any run of stray top-level inline nodes — a bare text node, a `<span>` or a
+   * `<br>` dropped in by a paste — is gathered into a single `<p>`, and
+   * whitespace-only text between blocks is discarded. Wrapping each text node
+   * on its own used to split one visual line into several paragraphs.
+   */
+  _normalize() {
+    const root = this.root;
+    if (!root.firstChild) {
+      root.innerHTML = '<p><br></p>';
+      return;
+    }
+
+    const BLOCK = /^(P|DIV|DL|UL|OL|LI|H[1-6]|TABLE|THEAD|TBODY|TR|TD|TH|BLOCKQUOTE|HR|FIGURE|FIGCAPTION|PRE)$/;
+    const isBlock = (n) => n.nodeType === Node.ELEMENT_NODE && BLOCK.test(n.tagName);
+
+    let run = null; // the <p> currently collecting an inline run
+    for (const node of [...root.childNodes]) {
+      if (isBlock(node)) {
+        run = null;
+        continue;
+      }
+      // Whitespace between blocks is layout noise, not content.
+      if (!run && node.nodeType === Node.TEXT_NODE && !node.textContent.trim()) {
+        root.removeChild(node);
+        continue;
+      }
+      if (!run) {
+        run = document.createElement('p');
+        root.insertBefore(run, node);
+      }
+      run.appendChild(node); // moves the node out of root and into the <p>
+    }
+
+    if (!root.firstChild) root.innerHTML = '<p><br></p>';
   }
 
   _bindDom() {

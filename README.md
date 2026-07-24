@@ -536,8 +536,15 @@ watermarkPlugin.pluginName = 'watermark';
 ```
 
 `editor` API: `addCommand`, `execCommand`, `native`, `queryState`, `queryValue`,
-`addShortcut`, `ui.addButton/addSelect/addColor/addSeparator`, `selection.*`,
-`events.on/emit`, `getContent`, `setContent`, `history`.
+`addShortcut`, `addNormalizer`, `commit`, `ui.addButton/addSelect/addColor/addSeparator`,
+`selection.*`, `events.on/emit`, `getContent`, `setContent`, `history`.
+
+- `addNormalizer(fn)` — register an idempotent DOM canonicaliser. It runs before
+  every serialisation, so a cleanup is reflected in the value the host receives
+  and in the undo snapshot, never one change behind. Prefer this over an
+  `events.on('change', …)` handler that mutates the DOM.
+- `commit()` — record a change + history entry after mutating the DOM directly
+  from a `keydown` handler (where no `input` event fires).
 
 ---
 
