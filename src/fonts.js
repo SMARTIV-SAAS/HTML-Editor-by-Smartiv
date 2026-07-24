@@ -137,8 +137,46 @@ export function quillFontClassCss(fonts = FONTS) {
  */
 export function usedFonts(html, fonts = FONTS) {
   const source = String(html ?? '');
-  return fileFonts(fonts).filter(
-    (f) => (f.family && source.includes(f.family)) || source.includes(`ql-font-${f.id}`)
+  const candidates = fileFonts(fonts);
+
+  // A bare `source.includes(family)` is wrong two ways: it flags a font whose
+  // name merely appears in body text ("Interview" → "Inter"), and it lets
+  // "Roboto" match inside "Roboto Condensed". Browsers also drop the quotes
+  // around single-word families on serialisation (`font-family: Roboto`) but
+  // keep them for multi-word ones (`"Roboto Condensed"`), so a quote-only match
+  // misses the former. The reliable answer is to read the parsed font-family
+  // off each element and compare the primary token exactly.
+  if (typeof document !== 'undefined' && document.implementation) {
+    const doc = document.implementation.createHTMLDocument('sv');
+    doc.body.innerHTML = source;
+
+    const families = new Set();
+    const classes = new Set();
+    for (const el of doc.body.querySelectorAll('[style]')) {
+      const primary = el.style.fontFamily.split(',')[0].trim().replace(/^["']|["']$/g, '');
+      if (primary) families.add(primary);
+    }
+    for (const el of doc.body.querySelectorAll('[class]')) {
+      el.classList.forEach((c) => { if (c.startsWith('ql-font-')) classes.add(c); });
+    }
+    return candidates.filter(
+      (f) => (f.family && families.has(f.family)) || classes.has(`ql-font-${f.id}`)
+    );
+  }
+
+  // No DOM (server-side): bounded best-effort match. Quoted forms, or the family
+  // as a whole token immediately after `font-family:`.
+  const uses = (family) => {
+    if (
+      source.includes(`&quot;${family}&quot;`) ||
+      source.includes(`"${family}"`) ||
+      source.includes(`'${family}'`)
+    ) return true;
+    const esc = family.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    return new RegExp(`font-family:\\s*${esc}\\s*[,;]`, 'i').test(source);
+  };
+  return candidates.filter(
+    (f) => (f.family && uses(f.family)) || source.includes(`ql-font-${f.id}`)
   );
 }
 
