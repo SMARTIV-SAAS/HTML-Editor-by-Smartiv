@@ -75,9 +75,29 @@ export function fontStack(font) {
   return `"${font.family}", ${font.fallback ?? 'sans-serif'}`;
 }
 
-/** Options for the editor's Font select. */
-export function fontOptions(fonts = FONTS) {
-  return fonts.map((f) => ({ value: fontStack(f), text: f.label }));
+/** True for a font the operator uploaded, as opposed to a shipped standard one. */
+export function isCustomFont(font) {
+  return font.source === 'remote';
+}
+
+/**
+ * Options for the editor's Font select.
+ *
+ * With `grouped`, uploaded fonts are floated to the top under a "Your fonts"
+ * heading so the operator reaches their own faces first; the shipped set follows
+ * under "Standard fonts". Without any uploads the list stays flat and ungrouped.
+ */
+export function fontOptions(fonts = FONTS, { grouped = false } = {}) {
+  const toOpt = (f, group) => ({ value: fontStack(f), text: f.label, group });
+  if (!grouped) return fonts.map((f) => toOpt(f));
+
+  const custom = fonts.filter(isCustomFont);
+  const standard = fonts.filter((f) => !isCustomFont(f));
+  if (!custom.length) return standard.map((f) => toOpt(f));
+  return [
+    ...custom.map((f) => toOpt(f, 'Your fonts')),
+    ...standard.map((f) => toOpt(f, 'Standard fonts'))
+  ];
 }
 
 function formatOf(file) {

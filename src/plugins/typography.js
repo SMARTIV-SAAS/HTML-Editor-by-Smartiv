@@ -33,7 +33,7 @@ export function typographyPlugin(editor) {
   editor.fontCatalog = editor.options.fontCatalog ?? FONTS;
   const fonts = editor.options.fontFamilies
     ? () => editor.options.fontFamilies
-    : () => fontOptions(editor.fontCatalog);
+    : () => fontOptions(editor.fontCatalog, { grouped: true });
 
   editor.addCommand('fontSize', (value) => applyInlineStyle(editor, 'fontSize', value));
   editor.addCommand('fontFamily', (value) => applyInlineStyle(editor, 'fontFamily', value));

@@ -26,6 +26,24 @@ const options = computed(() =>
   (props.tick, typeof props.item.options === 'function' ? props.item.options() : props.item.options ?? [])
 );
 
+// When options carry a `group`, render them under <optgroup> headings, keeping
+// the given order (e.g. uploaded fonts first). Null means a plain flat list.
+const optionGroups = computed(() => {
+  const opts = options.value;
+  if (!opts.some((o) => o.group)) return null;
+  const groups = [];
+  for (const opt of opts) {
+    const label = opt.group || '';
+    let last = groups[groups.length - 1];
+    if (!last || last.label !== label) {
+      last = { label, items: [] };
+      groups.push(last);
+    }
+    last.items.push(opt);
+  }
+  return groups;
+});
+
 const swatches = computed(() => props.item.swatches ?? [
   '#ffffff', '#e6edf3', '#9aa7b4', '#5b6773', '#1c2430', '#000000', '#ffd166', '#f4a261',
   '#e63946', '#d62828', '#f77f00', '#fcbf49', '#2a9d8f', '#43aa8b', '#0b63c5', '#1fbfd4'
@@ -74,7 +92,14 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
       @change="run($event.target.value)"
     >
       <option value="" disabled>{{ item.label }}</option>
-      <option v-for="opt in options" :key="opt.value" :value="opt.value">{{ opt.text }}</option>
+      <template v-if="optionGroups">
+        <optgroup v-for="g in optionGroups" :key="g.label" :label="g.label">
+          <option v-for="opt in g.items" :key="opt.value" :value="opt.value">{{ opt.text }}</option>
+        </optgroup>
+      </template>
+      <template v-else>
+        <option v-for="opt in options" :key="opt.value" :value="opt.value">{{ opt.text }}</option>
+      </template>
     </select>
     <svg class="sv-select__caret" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
       <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"
