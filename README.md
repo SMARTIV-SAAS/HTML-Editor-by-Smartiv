@@ -7,6 +7,10 @@ the plugins and the sanitizer are all written here.
 The TinyMCE checkout in `../reference-tinymce` is architectural reference only
 (plugin registry + command table), never a dependency.
 
+> **Rendering on Android TV?** See [`android/README.md`](android/README.md) for
+> the full player integration guide — asset setup, the Compose `HtmlView`, font
+> caching, and seamless coexistence with existing Quill content.
+
 ---
 
 ## Why not an off-the-shelf editor
