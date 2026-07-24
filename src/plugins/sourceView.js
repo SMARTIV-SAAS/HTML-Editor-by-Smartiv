@@ -21,18 +21,56 @@ export function prettyPrint(html) {
   let depth = 0;
   const out = [];
 
-  for (const token of tokens) {
+  const openLines = [];
+  const isBlockTag = (t) => {
+    const m = t && t.match(/^<\/?([a-zA-Z][a-zA-Z0-9]*)/);
+    return m ? BLOCK.test(m[1].toLowerCase()) : false;
+  };
+
+  for (let i = 0; i < tokens.length; i++) {
+    const token = tokens[i];
+
+    // Text node. Indentation left by an earlier pretty-print is not content:
+    // carrying it through is what made every source-view toggle stack another
+    // layer of blank lines onto the document.
+    if (!/^<\/?[a-zA-Z]/.test(token)) {
+      let text = token.replace(/\s+/g, ' ');
+      if (!text.trim()) continue;
+      // A block boundary is already a line break, so a space against it is just
+      // re-imported indentation. Spacing between inline tags is real and stays.
+      if (isBlockTag(tokens[i - 1])) text = text.replace(/^ /, '');
+      if (isBlockTag(tokens[i + 1])) text = text.replace(/ $/, '');
+      if (!text) continue;
+      if (out.length) out[out.length - 1] += text;
+      else out.push(text);
+      continue;
+    }
+
     const open = token.match(/^<([a-zA-Z][a-zA-Z0-9]*)/);
     const close = token.match(/^<\/([a-zA-Z][a-zA-Z0-9]*)/);
     const tag = (open?.[1] ?? close?.[1] ?? '').toLowerCase();
     const isBlock = BLOCK.test(tag);
     const selfClosing = /\/>$/.test(token) || /^(hr|br|img)$/.test(tag);
 
-    if (close && isBlock) depth = Math.max(0, depth - 1);
-    if (isBlock || (open && selfClosing)) out.push('  '.repeat(depth) + token.trim());
-    else if (out.length) out[out.length - 1] += token;
-    else out.push(token);
-    if (open && isBlock && !selfClosing) depth++;
+    if (open && isBlock && !selfClosing) {
+      out.push('  '.repeat(depth) + token.trim());
+      openLines.push(out.length - 1);
+      depth++;
+    } else if (close && isBlock) {
+      depth = Math.max(0, depth - 1);
+      const openLine = openLines.pop();
+      // Nothing new was started since this block opened, so it holds inline
+      // content only — close it on the same line. That keeps the closing tag
+      // from pushing a newline into the element's own text node.
+      if (openLine === out.length - 1) out[out.length - 1] += token.trim();
+      else out.push('  '.repeat(depth) + token.trim());
+    } else if (isBlock || selfClosing) {
+      out.push('  '.repeat(depth) + token.trim());
+    } else if (out.length) {
+      out[out.length - 1] += token;
+    } else {
+      out.push(token);
+    }
   }
   return out.filter((line) => line.trim()).join('\n');
 }

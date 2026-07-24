@@ -108,7 +108,12 @@ fun HtmlView(
     designWidthPx: Int = 1920,
     isAutoScroll: Boolean = false,
     isCentered: Boolean = false,
-    transparentBackground: Boolean = false,
+    /**
+     * Transparent by default: the theme background is an authoring aid in the
+     * CMS, not something the screen should paint over the player's own
+     * wallpaper. Set false only if this view is meant to be opaque.
+     */
+    transparentBackground: Boolean = true,
     /**
      * Base URL where the CMS serves self-hosted .woff2 files, e.g.
      * "https://cms.smartiv.id/fonts/". Null keeps the player on bundled fonts
@@ -325,7 +330,6 @@ private fun buildDocument(
 <meta name="viewport" content="width=$designWidthPx, initial-scale=1">
 <style>
 :root {
-  --sv-bg: ${theme.background};
   --sv-color: $textColor;
   --sv-rule: ${theme.rule};
   --sv-rule-soft: ${theme.ruleSoft};

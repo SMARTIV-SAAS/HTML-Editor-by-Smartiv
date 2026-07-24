@@ -189,6 +189,20 @@ export class Editor {
     const BLOCK = /^(P|DIV|DL|UL|OL|LI|H[1-6]|TABLE|THEAD|TBODY|TR|TD|TH|BLOCKQUOTE|HR|FIGURE|FIGCAPTION|PRE)$/;
     const isBlock = (n) => n.nodeType === Node.ELEMENT_NODE && BLOCK.test(n.tagName);
 
+    // Indentation that came in from HTML source mode sits in the tree as
+    // whitespace-only text nodes between block siblings. It is not content, and
+    // leaving it there bloats every saved document a little more each round trip.
+    const NESTED_BLOCK = /^(P|DIV|DL|DT|DD|UL|OL|LI|H[1-6]|TABLE|THEAD|TBODY|TR|TD|TH|BLOCKQUOTE|HR|FIGURE|FIGCAPTION|MAIN|SECTION)$/;
+    const blockSide = (n) => !n || (n.nodeType === Node.ELEMENT_NODE && NESTED_BLOCK.test(n.tagName));
+    const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, null);
+    const filler = [];
+    let scan;
+    while ((scan = walker.nextNode())) {
+      if (scan.data.trim()) continue;
+      if (blockSide(scan.previousSibling) && blockSide(scan.nextSibling)) filler.push(scan);
+    }
+    for (const node of filler) node.remove();
+
     let run = null; // the <p> currently collecting an inline run
     for (const node of [...root.childNodes]) {
       if (isBlock(node)) {
