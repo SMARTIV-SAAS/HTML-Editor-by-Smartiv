@@ -1,7 +1,66 @@
 /* Generated from src/fonts.js — do not edit by hand.
    Copy to app/src/main/assets/smartiv/ */
 
-
+@font-face {
+  font-family: 'Roboto';
+  src: url('file:///android_asset/fonts/RobotoFlex.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Montserrat';
+  src: url('file:///android_asset/fonts/Montserrat-VariableFont_wght.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'LexendDeca';
+  src: url('file:///android_asset/fonts/LexendDeca-VariableFont_wght.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'FunnelSans';
+  src: url('file:///android_asset/fonts/FunnelSans-VariableFont_wght.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Newsreader';
+  src: url('file:///android_asset/fonts/Newsreader-VariableFont_opsz,wght.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Monbaiti';
+  src: url('file:///android_asset/fonts/monbaiti.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'GreatVibes';
+  src: url('file:///android_asset/fonts/GreatVibes-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Monsieur';
+  src: url('file:///android_asset/fonts/MonsieurLaDoulaise-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Lavishly';
+  src: url('file:///android_asset/fonts/LavishlyYours-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Luxurious';
+  src: url('file:///android_asset/fonts/LuxuriousScript-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Pacifico';
+  src: url('file:///android_asset/fonts/Pacifico-Regular.ttf') format('truetype');
+  font-display: swap;
+}
+@font-face {
+  font-family: 'Zap';
+  src: url('file:///android_asset/fonts/ZAP.ttf') format('truetype');
+  font-display: swap;
+}
 
 /* Legacy class map. .ql-font-greatvibes is new: the original stylesheet
    declared .ql-font-monsieur twice and the second rule shadowed Great Vibes. */
