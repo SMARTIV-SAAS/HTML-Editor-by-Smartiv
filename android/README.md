@@ -143,7 +143,7 @@ HtmlView(
     designWidthPx: Int = 1920,         // authoring width; matches the editor preview
     isAutoScroll: Boolean = false,     // slow vertical crawl for overflowing content
     isCentered: Boolean = false,       // vertical-centre the content block
-    transparentBackground: Boolean = false,  // let a Compose background show through
+    transparentBackground: Boolean = true,   // default: WebView is transparent, the player's wallpaper shows through. Set false only for an opaque screen.
     fontRemoteBase: String? = null,    // CMS font base URL; null = bundled only
     fontFiles: List<String> = emptyList(),   // remote font filenames to prefetch
     remoteFontFaceCss: String = ""     // @font-face for remote families, from the CMS
