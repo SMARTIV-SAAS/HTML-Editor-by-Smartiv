@@ -13,7 +13,7 @@ The source for the player lives in the Gradle module:
 | `htmleditor/src/main/assets/fonts/` | Bundled `.ttf` files |
 
 ```kotlin
-implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.1")
+implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.3")
 ```
 
 ```kotlin

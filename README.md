@@ -442,7 +442,7 @@ inline in existing HTML, so renaming it orphans old content.
 **Recommended:** depend on the JitPack AAR (see [`android/JITPACK.md`](android/JITPACK.md)):
 
 ```kotlin
-implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.1")
+implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.3")
 ```
 
 ```kotlin

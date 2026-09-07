@@ -19,17 +19,57 @@
 
 /** Bundled in the APK. */
 export const FONTS = [
-  { id: 'roboto', label: 'Roboto', family: 'Roboto', file: 'RobotoFlex.ttf' },
+  { id: 'roboto', label: 'Roboto', family: 'Roboto', file: 'RobotoFlex.ttf', aliases: ['robotoflex'] },
   { id: 'montserrat', label: 'Montserrat', family: 'Montserrat', file: 'Montserrat-VariableFont_wght.ttf' },
-  { id: 'lexend', label: 'Lexend Deca', family: 'LexendDeca', file: 'LexendDeca-VariableFont_wght.ttf' },
-  { id: 'funnel', label: 'Funnel Sans', family: 'FunnelSans', file: 'FunnelSans-VariableFont_wght.ttf' },
+  {
+    id: 'lexend',
+    label: 'Lexend Deca',
+    family: 'LexendDeca',
+    file: 'LexendDeca-VariableFont_wght.ttf',
+    aliases: ['lexenddeca', 'lexend-deca']
+  },
+  {
+    id: 'funnel',
+    label: 'Funnel Sans',
+    family: 'FunnelSans',
+    file: 'FunnelSans-VariableFont_wght.ttf',
+    aliases: ['funnelsans', 'funnel-sans']
+  },
   // The comma in this filename is legal but must stay inside the quotes in url().
   { id: 'newsreader', label: 'Newsreader', family: 'Newsreader', file: 'Newsreader-VariableFont_opsz,wght.ttf', fallback: 'serif' },
   { id: 'monbaiti', label: 'Mongolian Baiti', family: 'Monbaiti', file: 'monbaiti.ttf' },
-  { id: 'greatvibes', label: 'Great Vibes', family: 'GreatVibes', file: 'GreatVibes-Regular.ttf', fallback: 'cursive' },
-  { id: 'monsieur', label: 'Monsieur La Doulaise', family: 'Monsieur', file: 'MonsieurLaDoulaise-Regular.ttf', fallback: 'cursive' },
-  { id: 'lavishly', label: 'Lavishly Yours', family: 'Lavishly', file: 'LavishlyYours-Regular.ttf', fallback: 'cursive' },
-  { id: 'luxurious', label: 'Luxurious Script', family: 'Luxurious', file: 'LuxuriousScript-Regular.ttf', fallback: 'cursive' },
+  {
+    id: 'greatvibes',
+    label: 'Great Vibes',
+    family: 'GreatVibes',
+    file: 'GreatVibes-Regular.ttf',
+    fallback: 'cursive',
+    aliases: ['great-vibes']
+  },
+  {
+    id: 'monsieur',
+    label: 'Monsieur La Doulaise',
+    family: 'Monsieur',
+    file: 'MonsieurLaDoulaise-Regular.ttf',
+    fallback: 'cursive',
+    aliases: ['monsieurladoulaise', 'monsieur-la-doulaise']
+  },
+  {
+    id: 'lavishly',
+    label: 'Lavishly Yours',
+    family: 'Lavishly',
+    file: 'LavishlyYours-Regular.ttf',
+    fallback: 'cursive',
+    aliases: ['lavishlyyours', 'lavishly-yours']
+  },
+  {
+    id: 'luxurious',
+    label: 'Luxurious Script',
+    family: 'Luxurious',
+    file: 'LuxuriousScript-Regular.ttf',
+    fallback: 'cursive',
+    aliases: ['luxuriousscript', 'luxurious-script']
+  },
   { id: 'pacifico', label: 'Pacifico', family: 'Pacifico', file: 'Pacifico-Regular.ttf', fallback: 'cursive' },
   { id: 'zap', label: 'Zap', family: 'Zap', file: 'ZAP.ttf', fallback: 'cursive' },
 
@@ -37,6 +77,11 @@ export const FONTS = [
   { id: 'system', label: 'System sans', stack: 'system-ui, -apple-system, sans-serif' },
   { id: 'mono', label: 'Monospace', stack: '"Courier New", monospace' }
 ];
+
+/** All Quill class suffixes that resolve to a font (`id` + historical aliases). */
+function fontClassIds(font) {
+  return [font.id, ...(font.aliases ?? [])];
+}
 
 /**
  * Shape of a remote entry, as returned by the CMS `GET /api/fonts`:
@@ -141,10 +186,16 @@ export function fontFaceCss({ bundledBase, remoteBase } = {}, fonts = FONTS) {
  * these must keep resolving. `.ql-font-greatvibes` is new: the original
  * stylesheet declared `.ql-font-monsieur` twice, and the second rule silently
  * shadowed the Great Vibes mapping.
+ *
+ * `aliases` cover hyphenated / concatenated Quill class names still present in
+ * older Mobile-TV / Velolu HTML (e.g. `ql-font-great-vibes`).
  */
 export function legacyFontClassCss(fonts = FONTS) {
   return fileFonts(fonts)
-    .map((f) => `.ql-font-${f.id} { font-family: ${fontStack(f)}; }`)
+    .map((f) => {
+      const selectors = fontClassIds(f).map((id) => `.ql-font-${id}`).join(', ');
+      return `${selectors} { font-family: ${fontStack(f)}; }`;
+    })
     .join('\n');
 }
 
@@ -180,7 +231,9 @@ export function usedFonts(html, fonts = FONTS) {
       el.classList.forEach((c) => { if (c.startsWith('ql-font-')) classes.add(c); });
     }
     return candidates.filter(
-      (f) => (f.family && families.has(f.family)) || classes.has(`ql-font-${f.id}`)
+      (f) =>
+        (f.family && families.has(f.family)) ||
+        fontClassIds(f).some((id) => classes.has(`ql-font-${id}`))
     );
   }
 
@@ -196,7 +249,9 @@ export function usedFonts(html, fonts = FONTS) {
     return new RegExp(`font-family:\\s*${esc}\\s*[,;]`, 'i').test(source);
   };
   return candidates.filter(
-    (f) => (f.family && uses(f.family)) || source.includes(`ql-font-${f.id}`)
+    (f) =>
+      (f.family && uses(f.family)) ||
+      fontClassIds(f).some((id) => source.includes(`ql-font-${id}`))
   );
 }
 
