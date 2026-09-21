@@ -13,11 +13,13 @@
  * belongs in the player's own asset pipeline, not in operator-authored HTML.
  */
 const ALLOWED_TAGS = new Set([
-  'p', 'br', 'span', 'div', 'strong', 'b', 'em', 'i', 'u', 's', 'sub', 'sup',
+  // Text formatting (W3Schools "HTML Text Formatting")
+  'p', 'br', 'span', 'div', 'strong', 'b', 'em', 'i', 'u', 's',
+  'sub', 'sup', 'mark', 'small', 'del', 'ins', 'code', 'pre', 'abbr',
   'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
   'ul', 'ol', 'li', 'blockquote', 'hr',
   'a',
-  'table', 'thead', 'tbody', 'tr', 'th', 'td',
+  'table', 'thead', 'tbody', 'tr', 'th', 'td', 'caption',
   'dl', 'dt', 'dd'
 ]);
 
@@ -30,7 +32,7 @@ const DROP_ENTIRELY = new Set([
 const SV_DATA_ATTR = /^data-sv-[a-z0-9-]+$/;
 
 const ALLOWED_ATTRS = {
-  '*': ['class', 'style', 'dir'],
+  '*': ['class', 'style', 'dir', 'title'],
   a: ['href', 'target', 'rel'],
   td: ['colspan', 'rowspan'],
   th: ['colspan', 'rowspan', 'scope']

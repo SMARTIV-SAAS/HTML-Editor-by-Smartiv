@@ -35,6 +35,9 @@ export const TV_CSS = String.raw`
 .sv-content h1, .sv-tv h1 { font-size: 4rem; line-height: 1.1; margin: 0 0 .4em; font-weight: 700; }
 .sv-content h2, .sv-tv h2 { font-size: 3rem; line-height: 1.15; margin: 0 0 .4em; font-weight: 700; }
 .sv-content h3, .sv-tv h3 { font-size: 2.25rem; margin: 0 0 .4em; font-weight: 600; }
+.sv-content h4, .sv-tv h4 { font-size: 1.75rem; margin: 0 0 .4em; font-weight: 600; }
+.sv-content h5, .sv-tv h5 { font-size: 1.4rem; margin: 0 0 .4em; font-weight: 600; }
+.sv-content h6, .sv-tv h6 { font-size: 1.15rem; margin: 0 0 .4em; font-weight: 600; letter-spacing: .02em; }
 .sv-content p,  .sv-tv p  { margin: 0 0 .65em; }
 .sv-content blockquote, .sv-tv blockquote {
   margin: 0 0 .8em; padding-left: .8em; border-left: .2em solid currentColor; opacity: .9;
@@ -43,6 +46,21 @@ export const TV_CSS = String.raw`
 .sv-content hr, .sv-tv hr {
   border: 0; border-top: 2px solid currentColor; opacity: .35; margin: .8em 0;
 }
+
+/* Text-formatting elements (W3Schools HTML formatting) */
+.sv-content code, .sv-tv code,
+.sv-content pre,  .sv-tv pre {
+  font-family: "Courier New", ui-monospace, monospace;
+}
+.sv-content pre, .sv-tv pre {
+  margin: 0 0 .8em; padding: .5em .7em; white-space: pre-wrap; overflow-wrap: anywhere;
+  border-radius: .2em; background: var(--sv-rule-soft, rgba(0, 0, 0, .05));
+}
+.sv-content mark, .sv-tv mark { background: #ffe066; color: inherit; padding: 0 .1em; }
+.sv-content small, .sv-tv small { font-size: .8em; }
+.sv-content sub, .sv-tv sub,
+.sv-content sup, .sv-tv sup { font-size: .75em; line-height: 0; }
+.sv-content abbr, .sv-tv abbr { text-decoration: underline dotted; }
 
 /* ------------------------------------------------------- field list (label:) */
 /*

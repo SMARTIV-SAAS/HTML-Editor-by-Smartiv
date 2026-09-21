@@ -5,6 +5,10 @@ export function blocksPlugin(editor) {
     { value: 'h1', text: 'Heading 1' },
     { value: 'h2', text: 'Heading 2' },
     { value: 'h3', text: 'Heading 3' },
+    { value: 'h4', text: 'Heading 4' },
+    { value: 'h5', text: 'Heading 5' },
+    { value: 'h6', text: 'Heading 6' },
+    { value: 'pre', text: 'Preformatted' },
     { value: 'blockquote', text: 'Quote' }
   ];
 
@@ -17,7 +21,7 @@ export function blocksPlugin(editor) {
     command: 'formatBlock',
     value: () => {
       const block = editor.selection.closest(
-        (n) => n.nodeType === 1 && /^(P|H[1-6]|BLOCKQUOTE|DIV)$/.test(n.tagName)
+        (n) => n.nodeType === 1 && /^(P|H[1-6]|PRE|BLOCKQUOTE|DIV)$/.test(n.tagName)
       );
       const tag = block?.tagName.toLowerCase() ?? 'p';
       return tag === 'div' ? 'p' : tag;

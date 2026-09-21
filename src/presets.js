@@ -36,7 +36,6 @@ export const defaultToolbar = [
   ['fieldList', 'fieldListColon', 'fieldListLabelWidth'],
   ['panels', 'panelColumns', 'table', 'tableAddRow', 'tableAddColumn', 'tableDeleteRow', 'tableDeleteColumn'],
   ['link', 'unlink', 'hr'],
-  ['theme', 'themeToggle'],
   ['source', 'preview', 'safeArea', 'exportTv']
 ];
 
@@ -49,5 +48,5 @@ export const compactToolbar = [
   ['alignLeft', 'alignCenter', 'alignRight'],
   ['fieldList', 'fieldListColon'],
   ['panels', 'panelColumns'],
-  ['theme', 'preview']
+  ['preview']
 ];
