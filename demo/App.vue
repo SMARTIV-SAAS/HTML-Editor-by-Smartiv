@@ -31,7 +31,7 @@ const welcomeScreen = ref(`
 
 const tv = { title: 'Smartiv Room Display', rootFontSize: '16px' };
 const roomTheme = ref('light');
-const welcomeTheme = ref('brand');
+const welcomeTheme = ref('light');
 
 const roomFonts = ref([]);
 const welcomeFonts = ref([]);

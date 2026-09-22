@@ -50,17 +50,14 @@ const themeVars = computed(() => resolveTheme(activeTheme.value));
 /** Static tv config first, then the live theme — the operator's pick wins. */
 const tvOptions = computed(() => ({ ...(props.options.tv ?? {}), ...themeVars.value }));
 
+// The editing surface is a plain neutral white — it no longer mirrors the TV
+// theme background. The theme was an editing aid that only confused operators
+// once the on-TV background became transparent, so the surface stays neutral
+// and the theme survives solely as the TV text colour (used by the preview and
+// the exported document).
 const surfaceStyle = computed(() => ({
   '--sv-min-height': props.minHeight,
-  '--sv-max-height': props.maxHeight,
-  ...(props.tvSurface
-    ? {
-        '--sv-bg': themeVars.value.background,
-        '--sv-color': themeVars.value.color,
-        '--sv-rule': themeVars.value.rule,
-        '--sv-rule-soft': themeVars.value.ruleSoft
-      }
-    : {})
+  '--sv-max-height': props.maxHeight
 }));
 
 const notice = ref('');
