@@ -10,6 +10,7 @@ export { bakeColons } from './core/output.js';
 export {
   isSmartivHtml, documentVersion, wrapDocument, unwrapDocument, SV_DOC_VERSION
 } from './core/marker.js';
+export { toPortable, fromPortable } from './core/portable.js';
 export { defaultPlugins, defaultToolbar, compactToolbar } from './presets.js';
 export { buildDocument } from './plugins/tv.js';
 export { prettyPrint } from './plugins/sourceView.js';

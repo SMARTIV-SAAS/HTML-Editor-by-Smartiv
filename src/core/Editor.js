@@ -2,6 +2,7 @@ import { EventBus } from './EventBus.js';
 import { History } from './history.js';
 import { sanitizeHtml, toPlainText } from './sanitize.js';
 import { wrapDocument, unwrapDocument } from './marker.js';
+import { toPortable, fromPortable } from './portable.js';
 import * as sel from './selection.js';
 
 /**
@@ -85,14 +86,25 @@ export class Editor {
    * selection, normalisation and undo all keep working against a flat list of
    * blocks. Set `options.documentMarker: false` to store bare fragments.
    */
-  getContent({ format = 'html', marker = this.options.documentMarker !== false } = {}) {
-    const html = sanitizeHtml(this.root.innerHTML);
+  getContent({
+    format = 'html',
+    marker = this.options.documentMarker !== false,
+    // Self-contained output: field lists become colon-aligned tables and
+    // multi-column panels get inline flex, so the HTML renders with no external
+    // stylesheet. Set `options.output: 'class'` to keep the lean class-based
+    // markup for players that ship tv.css.
+    portable = this.options.output !== 'class'
+  } = {}) {
+    let html = sanitizeHtml(this.root.innerHTML);
     if (format === 'text') return toPlainText(html);
+    if (portable) html = toPortable(html);
     return marker ? wrapDocument(html) : html;
   }
 
   setContent(html, { silent = false } = {}) {
-    this.root.innerHTML = sanitizeHtml(unwrapDocument(html)) || '<p><br></p>';
+    // Reverse the portable transform before editing, so the operator works on
+    // the friendly <dl>. Harmless when the content is already class-based.
+    this.root.innerHTML = sanitizeHtml(fromPortable(unwrapDocument(html))) || '<p><br></p>';
     this._normalize();
     // Canonicalise loaded content immediately (e.g. un-bake exported colons),
     // even when silent, so getContent() right after setContent is already clean.
