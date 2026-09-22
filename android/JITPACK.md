@@ -6,7 +6,7 @@ The Compose TV player ships as an **AAR** from module `:htmleditor`.
 |---|---|
 | Package | `com.smartiv.htmleditor` |
 | JitPack page | https://jitpack.io/#SMARTIV-SAAS/HTML-Editor-by-Smartiv |
-| Latest published example | `1.0.3` |
+| Latest published example | `1.0.4` |
 | Dependency | `com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:<tag>` |
 
 Inside the AAR: `HtmlView`, `FontCache`, `ScreenTheme`, bundled fonts (`assets/fonts/`), and CSS (`assets/smartiv/tv.css`, `assets/smartiv/fonts.css`).
@@ -22,12 +22,12 @@ JitPack membangun artifact **per Git tag** (atau commit hash), bukan dari branch
 | Aksi | Efek di app yang sudah depend ke `1.0.2` |
 |------|------------------------------------------|
 | `git push origin main` | Tidak ada — app tetap pakai AAR tag lama |
-| Tag baru `1.0.3` + push tag + build JitPack hijau | Masih tidak, sampai app **menaikkan** versi dependency |
-| App ubah ke `implementation("…:1.0.3")` + sync Gradle | Baru dapat kode/AAR baru |
+| Tag baru `1.0.4` + push tag + build JitPack hijau | Masih tidak, sampai app **menaikkan** versi dependency |
+| App ubah ke `implementation("…:1.0.4")` + sync Gradle | Baru dapat kode/AAR baru |
 
 Jadi alurnya selalu: **ubah kode → commit/push → tag versi baru → JitPack build → bump versi di Mobile-TV**.
 
-Jangan reuse tag yang sudah di-build (mis. force-move `1.0.2`). Buat `1.0.3`, `1.0.4`, … supaya cache JitPack/Gradle tidak membingungkan.
+Jangan reuse tag yang sudah di-build (mis. force-move `1.0.2`). Buat `1.0.4`, `1.0.4`, … supaya cache JitPack/Gradle tidak membingungkan.
 
 ---
 
@@ -57,24 +57,24 @@ git push origin main
 ### 3. Buat & push Git tag (semver)
 
 ```bash
-git tag 1.0.3
-git push origin 1.0.3
+git tag 1.0.4
+git push origin 1.0.4
 ```
 
 ### 4. Build di JitPack
 
 1. Buka https://jitpack.io/#SMARTIV-SAAS/HTML-Editor-by-Smartiv  
-2. Look up → pilih tag baru (`1.0.3`)  
+2. Look up → pilih tag baru (`1.0.4`)  
 3. Tunggu status **hijau** (`ok`)
 
 Atau trigger dengan membuka:
 
-`https://jitpack.io/com/github/SMARTIV-SAAS/HTML-Editor-by-Smartiv/1.0.3/build.log`
+`https://jitpack.io/com/github/SMARTIV-SAAS/HTML-Editor-by-Smartiv/1.0.4/build.log`
 
 Artifact yang dihasilkan:
 
 ```
-com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.3
+com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.4
 ```
 
 (`jitpack.yml` menjalankan `./gradlew :htmleditor:publishToMavenLocal`; JitPack mem-publish ulang sebagai artifact repo di atas.)
@@ -84,7 +84,7 @@ com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.3
 `gradle/libs.versions.toml`:
 
 ```toml
-smartivHtmleditor = "1.0.3"
+smartivHtmleditor = "1.0.4"
 ```
 
 `core/components/build.gradle.kts` (atau module konsumen):
@@ -114,7 +114,7 @@ dependencyResolutionManagement {
 `build.gradle.kts`:
 
 ```kotlin
-implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.3")
+implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.4")
 ```
 
 Import:

@@ -171,6 +171,14 @@ written as an inline style on a `<span>`:
 The popup offers preset swatches plus a native colour input for any hex value.
 Highlight colour (`background-color`) works the same way.
 
+### Dark-mode writing aid
+
+A toolbar toggle (moon icon, `Ctrl/Cmd+Shift+L`) flips the **editing surface**
+to a dark background so light-coloured text stays visible while authoring. It is
+a per-viewer preview only — remembered in `localStorage`, and it never changes
+the content, the stored HTML, the TV output or the export. Opt out with
+`options.rememberDarkMode: false`, or set a custom `options.darkModeKey`.
+
 ---
 
 ## Panel layout
@@ -230,11 +238,35 @@ legacy. The marker is on every document regardless of what is inside it.
 | **Legacy content** | works today | handled — `body.legacy` + the legacy rules |
 | **Smartiv content** | **breaks** — no tv.css, so field lists stack and colons vanish | handled |
 
-Only the bottom-left cell is a problem, and it is the normal state of a
-transition: the CMS is one deployment, the player fleet updates gradually. Ship
-the new player first and let the fleet fill up before authoring any Smartiv
-content — or emit self-contained inline styles so the content renders with no
-external CSS at all.
+The bottom-left cell — new content on an old player — is closed by **portable
+output** (below), which is the default.
+
+---
+
+## Portable output (transition-safe)
+
+By default `getContent()` emits **self-contained** HTML that renders correctly
+with no external stylesheet, so a screen looks right on an old player that has
+no `tv.css`:
+
+- a **field list** becomes a plain `<table data-sv-block="fields">` whose colon
+  sits in its own column, so the colons align in any renderer with zero CSS;
+- **multi-column panels** get inline flex;
+- text formatting is native HTML, and the operator's colours/fonts are already
+  inline — they travel untouched.
+
+The editing DOM is unchanged: `setContent()` reverses the transform back to the
+friendly `<dl>`/panel classes, so keyboard nav and the toolbar keep working, and
+the round trip is stable.
+
+```js
+options: { output: 'portable' }  // default — safe on any player
+options: { output: 'class' }     // lean class-based markup; needs tv.css
+```
+
+Switch to `'class'` once the whole fleet ships `tv.css`: the HTML is shorter and
+one stylesheet can restyle every screen at once. `toPortable` / `fromPortable`
+are exported for use outside the editor.
 
 ## Images are not supported — by design
 
@@ -398,7 +430,7 @@ inline in existing HTML, so renaming it orphans old content.
 **Recommended:** depend on the JitPack AAR (see [`android/JITPACK.md`](android/JITPACK.md)):
 
 ```kotlin
-implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.3")
+implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.4")
 ```
 
 ```kotlin
@@ -542,12 +574,19 @@ This matters because the result is executed by a WebView on the signage device.
 
 ---
 
-## Status
+## Status (1.0.4)
 
-Working: inline formatting, blocks/headings, alignment, lists, typography with
-independent text and highlight colour, field lists, light/dark background
-themes, 1–3 column panels, tables, links, undo/redo, HTML source mode, 1080p TV
-preview with safe area, standalone export.
+Working: inline formatting (bold/italic/underline/strikethrough, plus `code`,
+`mark`, `small`, `del`, `ins`, `sub`, `sup`, `abbr`), blocks and headings
+`h1`–`h6`, Preformatted (`<pre>`), alignment, lists, typography with independent
+text and highlight colour, field lists (colon-aligned), 1–3 column panels,
+tables, links, undo/redo, HTML source mode, 1080p TV preview with safe area,
+standalone export, a font-upload manager shared across the CMS, and a dark-mode
+**writing aid** (remembered in localStorage) that never touches the content.
+
+Output is **portable by default** — see
+[Portable output](#portable-output-transition-safe). There is no background
+theme; text colour is set per run and travels inline.
 
 Not included: images (deliberately — see above), find & replace, D-pad
 navigation inside the editor (the editor runs in the desktop CMS, not on the TV).

@@ -13,7 +13,7 @@ The source for the player lives in the Gradle module:
 | `htmleditor/src/main/assets/fonts/` | Bundled `.ttf` files |
 
 ```kotlin
-implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.3")
+implementation("com.github.SMARTIV-SAAS:HTML-Editor-by-Smartiv:1.0.4")
 ```
 
 ```kotlin
@@ -104,11 +104,18 @@ the first is required:
 | Column | Type | Example | Notes |
 |---|---|---|---|
 | `html` | TEXT | `<div class="sv-doc" data-sv-doc="1">…` | the stored content, as-is |
-| `theme` | TEXT | `"light"` | background preset; defaults to `light` when null |
+| `theme` | TEXT | `"light"` | optional; **the editor no longer emits it (removed in 1.0.4)** — see the note below |
 | `fonts` | TEXT (JSON) | `["Oswald","Bebas Neue"]` | families used, for remote-font prefetch only |
 
-`theme` and `fonts` come straight from the editor: `v-model:theme` and the
-`@update:fonts` event / `getUsedFonts()`. Store them and hand them back.
+`fonts` comes from the editor's `@update:fonts` event / `getUsedFonts()`. Store
+it and hand it back.
+
+> **Note on `theme` (1.0.4):** the editor no longer has a background theme, so it
+> does not produce a `theme` value. `HtmlView` still accepts the `theme`
+> parameter for backward compatibility, but on a transparent player it only sets
+> the default text colour. Prefer leaving it null and setting text colour inline
+> in the editor, or pass `fontColor` for a screen-wide default (e.g.
+> `Color.White` over a dark wallpaper).
 
 ---
 
@@ -160,9 +167,9 @@ HtmlView(
 | `midnight` | `#0b1a2b` | `#eaf2fb` |
 | `brand` | Smartiv blue gradient | `#ffffff` |
 
-Keep these in step with `THEMES` in the editor (`src/plugins/theme.js`). The
-`WebView` background is painted the theme's solid colour before the page loads,
-so there is no white flash.
+These presets live only in the `ScreenTheme` enum in `HtmlView.kt` now (the
+editor's theme concept was removed in 1.0.4). With `transparentBackground = true`
+the background is not painted at all — only the text colour applies.
 
 ### Sizing for 720p vs 1080p
 
