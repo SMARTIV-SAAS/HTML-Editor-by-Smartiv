@@ -46,6 +46,19 @@ export function prettyPrint(html) {
       continue;
     }
 
+    // <pre> is whitespace-significant. Emit the whole element verbatim so the
+    // source view never reflows or re-indents its content — collapsing it would
+    // permanently destroy the preformatted text.
+    if (/^<pre[\s>]/i.test(token)) {
+      let raw = token;
+      while (i + 1 < tokens.length && !/^<\/pre\s*>/i.test(tokens[i + 1])) {
+        raw += tokens[++i];
+      }
+      if (i + 1 < tokens.length) raw += tokens[++i]; // the closing </pre>
+      out.push('  '.repeat(depth) + raw);
+      continue;
+    }
+
     const open = token.match(/^<([a-zA-Z][a-zA-Z0-9]*)/);
     const close = token.match(/^<\/([a-zA-Z][a-zA-Z0-9]*)/);
     const tag = (open?.[1] ?? close?.[1] ?? '').toLowerCase();
