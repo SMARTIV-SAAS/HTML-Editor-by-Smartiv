@@ -9,8 +9,10 @@ import { linkPlugin } from './plugins/link.js';
 import { tablePlugin } from './plugins/table.js';
 import { sourceViewPlugin } from './plugins/sourceView.js';
 import { tvPlugin } from './plugins/tv.js';
+import { surfacePlugin } from './plugins/surface.js';
 
 export const defaultPlugins = [
+  surfacePlugin,
   historyPlugin,
   inlinePlugin,
   blocksPlugin,
@@ -34,7 +36,7 @@ export const defaultToolbar = [
   ['fieldList', 'fieldListColon', 'fieldListLabelWidth'],
   ['panels', 'panelColumns', 'table', 'tableAddRow', 'tableAddColumn', 'tableDeleteRow', 'tableDeleteColumn'],
   ['link', 'unlink', 'hr'],
-  ['source', 'preview', 'safeArea', 'exportTv']
+  ['darkMode', 'source', 'preview', 'safeArea', 'exportTv']
 ];
 
 /** Cut-down bar for CMS forms that only need the signage essentials. */
@@ -46,5 +48,5 @@ export const compactToolbar = [
   ['alignLeft', 'alignCenter', 'alignRight'],
   ['fieldList', 'fieldListColon'],
   ['panels', 'panelColumns'],
-  ['preview']
+  ['darkMode', 'preview']
 ];

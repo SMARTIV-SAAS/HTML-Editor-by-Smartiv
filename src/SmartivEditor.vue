@@ -44,14 +44,22 @@ let syncing = false;
 /** Config passed to the TV preview and the standalone export. */
 const tvOptions = computed(() => props.options.tv ?? {});
 
-// The editing surface is a plain neutral white — it no longer mirrors the TV
-// theme background. The theme was an editing aid that only confused operators
-// once the on-TV background became transparent, so the surface stays neutral
-// and the theme survives solely as the TV text colour (used by the preview and
-// the exported document).
+// Dark-mode writing aid. Purely a preview of the editing surface — it never
+// touches the content, the stored HTML, the TV output or the export. Lets an
+// operator see light-coloured text while authoring.
+const darkMode = ref(false);
+
 const surfaceStyle = computed(() => ({
   '--sv-min-height': props.minHeight,
-  '--sv-max-height': props.maxHeight
+  '--sv-max-height': props.maxHeight,
+  ...(darkMode.value
+    ? {
+        '--sv-bg': '#0f1216',
+        '--sv-color': '#f2f5f8',
+        '--sv-rule': 'rgba(255, 255, 255, .22)',
+        '--sv-rule-soft': 'rgba(255, 255, 255, .08)'
+      }
+    : {})
 }));
 
 const notice = ref('');
@@ -114,6 +122,11 @@ onMounted(() => {
   });
 
   instance.events.on('selectionchange', () => { tick.value++; });
+
+  instance.events.on('dark-mode', (on) => {
+    darkMode.value = on;
+    tick.value++;
+  });
 
   instance.events.on('notice', (message) => {
     notice.value = message;
@@ -212,7 +225,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="sv-editor" :class="{ 'sv-editor--dark': dark }">
+  <div class="sv-editor" :class="{ 'sv-editor--dark': dark || darkMode }">
     <Toolbar v-if="editor" :editor="editor" :layout="toolbar" :tick="tick" />
 
     <div class="sv-surface" :style="surfaceStyle">

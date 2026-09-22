@@ -62,6 +62,7 @@ const ICONS = {
     '<rect x="5" y="4" width="9" height="16" rx="1.5"/><path d="M9.5 4v16"/><path d="M5 10h9"/>' +
     '<path d="M17 12h5"/>',
 
+  darkMode: '<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
   source: '<path d="M9 8l-4 4 4 4"/><path d="M15 8l4 4-4 4"/><path d="M13.5 6l-3 12"/>',
   preview: '<rect x="3" y="5" width="18" height="12" rx="1.5"/><path d="M8 21h8"/><path d="M12 17v4"/>',
   safeArea:
