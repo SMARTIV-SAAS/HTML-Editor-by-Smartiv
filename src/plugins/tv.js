@@ -10,7 +10,6 @@
 import { TV_CSS } from '../styles/tvCss.js';
 import { bakeColons } from '../core/output.js';
 import { FONTS, fontFaceCss, usedFonts } from '../fonts.js';
-import { resolveTheme, DEFAULT_THEME } from './theme.js';
 
 export function tvPlugin(editor) {
   /**
@@ -60,11 +59,7 @@ export function tvPlugin(editor) {
   });
 
   editor.addCommand('exportTv', () => {
-    // The chosen theme wins over the static config: it is the operator's call.
-    const html = buildDocument(editor.getContent(), {
-      ...(editor.options.tv ?? {}),
-      ...resolveTheme(editor.theme ?? DEFAULT_THEME)
-    });
+    const html = buildDocument(editor.getContent(), editor.options.tv ?? {});
     editor.events.emit('export', { filename: 'smartiv-screen.html', html });
     return html;
   });
@@ -98,13 +93,15 @@ tvPlugin.pluginName = 'tv';
  * fails to load reflows the whole screen mid-rotation.
  */
 export function buildDocument(bodyHtml, opts = {}) {
-  const fallback = resolveTheme(DEFAULT_THEME);
   const {
     title = 'Smartiv Screen',
-    background = fallback.background,
-    color = fallback.color,
-    rule = fallback.rule,
-    ruleSoft = fallback.ruleSoft,
+    // Transparent by default — the player composes its own wallpaper behind the
+    // WebView. Text colour comes from the inline colours the operator picked;
+    // `color` is only a fallback for runs with no explicit colour.
+    background = 'transparent',
+    color = '#14181d',
+    rule = 'rgba(0, 0, 0, .18)',
+    ruleSoft = 'rgba(0, 0, 0, .05)',
     fontFamily = 'Roboto, "Noto Sans", system-ui, sans-serif',
     rootFontSize = '16px',
     safeArea = '5%',

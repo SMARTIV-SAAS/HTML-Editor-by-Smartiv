@@ -30,8 +30,6 @@ const welcomeScreen = ref(`
 `.trim());
 
 const tv = { title: 'Smartiv Room Display', rootFontSize: '16px' };
-const roomTheme = ref('light');
-const welcomeTheme = ref('light');
 
 const roomFonts = ref([]);
 const welcomeFonts = ref([]);
@@ -65,7 +63,6 @@ const welcomeFonts = ref([]);
       <h2 style="font-size:14px;margin:0 0 8px;color:#5b6773">Room display</h2>
       <SmartivEditor
         v-model="roomScreen"
-        v-model:theme="roomTheme"
         :options="{ tv, autoDownload: false }"
         min-height="360px"
         @update:fonts="roomFonts = $event"
@@ -79,7 +76,6 @@ const welcomeFonts = ref([]);
       <h2 style="font-size:14px;margin:0 0 8px;color:#5b6773">Welcome screen</h2>
       <SmartivEditor
         v-model="welcomeScreen"
-        v-model:theme="welcomeTheme"
         :options="{ tv, autoDownload: false }"
         min-height="260px"
         @update:fonts="welcomeFonts = $event"

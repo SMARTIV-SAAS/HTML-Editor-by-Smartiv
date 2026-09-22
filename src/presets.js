@@ -9,10 +9,8 @@ import { linkPlugin } from './plugins/link.js';
 import { tablePlugin } from './plugins/table.js';
 import { sourceViewPlugin } from './plugins/sourceView.js';
 import { tvPlugin } from './plugins/tv.js';
-import { themePlugin } from './plugins/theme.js';
 
 export const defaultPlugins = [
-  themePlugin,
   historyPlugin,
   inlinePlugin,
   blocksPlugin,

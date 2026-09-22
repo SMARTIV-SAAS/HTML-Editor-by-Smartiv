@@ -4,7 +4,6 @@ import { FONT_STORE_KEY } from './fontStore.js';
 import { Editor } from './core/Editor.js';
 import { defaultPlugins, defaultToolbar } from './presets.js';
 import { prettyPrint } from './plugins/sourceView.js';
-import { resolveTheme, DEFAULT_THEME } from './plugins/theme.js';
 import { FONTS, usedFontNames } from './fonts.js';
 import { ensureContentStyles } from './styles/inject.js';
 import Toolbar from './ui/Toolbar.vue';
@@ -13,8 +12,6 @@ import TvPreview from './ui/TvPreview.vue';
 
 const props = defineProps({
   modelValue: { type: String, default: '' },
-  /** Background theme name — v-model:theme keeps it in sync with the host. */
-  theme: { type: String, default: DEFAULT_THEME },
   /** Plugin factories; defaults to the full Smartiv set. */
   plugins: { type: Array, default: () => defaultPlugins },
   /** Array of groups of registered button names. */
@@ -30,7 +27,7 @@ const props = defineProps({
 });
 
 const emit = defineEmits([
-  'update:modelValue', 'update:theme', 'update:fonts', 'change', 'init', 'export'
+  'update:modelValue', 'update:fonts', 'change', 'init', 'export'
 ]);
 
 const rootEl = ref(null);
@@ -44,11 +41,8 @@ const words = ref(0);
 
 let syncing = false;
 
-const activeTheme = ref(props.theme);
-const themeVars = computed(() => resolveTheme(activeTheme.value));
-
-/** Static tv config first, then the live theme — the operator's pick wins. */
-const tvOptions = computed(() => ({ ...(props.options.tv ?? {}), ...themeVars.value }));
+/** Config passed to the TV preview and the standalone export. */
+const tvOptions = computed(() => props.options.tv ?? {});
 
 // The editing surface is a plain neutral white — it no longer mirrors the TV
 // theme background. The theme was an editing aid that only confused operators
@@ -104,16 +98,9 @@ onMounted(() => {
 
   const instance = new Editor(rootEl.value, {
     ...props.options,
-    theme: props.theme,
     fontCatalog: fontCatalog.value
   });
   for (const plugin of props.plugins) instance.use(plugin);
-
-  instance.events.on('theme', (name) => {
-    activeTheme.value = name;
-    emit('update:theme', name);
-    tick.value++;
-  });
 
   instance.events.on('change', (html) => {
     syncing = true;
@@ -189,11 +176,6 @@ watch(fontCatalog, (catalog) => {
     editor.value.fontCatalog = catalog;
     tick.value++;
   }
-});
-
-watch(() => props.theme, (name) => {
-  if (!editor.value || name === activeTheme.value) return;
-  editor.value.execCommand('setTheme', name);
 });
 
 watch(() => props.readonly, (ro) => {

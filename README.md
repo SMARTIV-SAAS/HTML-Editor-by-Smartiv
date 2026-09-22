@@ -51,7 +51,6 @@ createApp(App).use(SmartivEditorPlugin).mount('#app');
 <template>
   <SmartivEditor
     v-model="html"
-    v-model:theme="theme"
     min-height="420px"
     @export="saveToCms"
   />
@@ -60,7 +59,6 @@ createApp(App).use(SmartivEditorPlugin).mount('#app');
 <script setup>
 import { ref } from 'vue';
 const html = ref('');
-const theme = ref('light');
 function saveToCms({ html }) { /* POST to the API */ }
 </script>
 ```
@@ -76,18 +74,17 @@ import { SmartivEditor } from '@smartiv/html-editor';
 | Prop | Type | Default | Notes |
 |---|---|---|---|
 | `modelValue` | String | `''` | content HTML (v-model) |
-| `theme` | String | `'light'` | background theme name (`v-model:theme`) |
 | `plugins` | Array | `defaultPlugins` | plugin factories |
 | `toolbar` | Array | `defaultToolbar` | groups of registered button names; `compactToolbar` also ships |
 | `options` | Object | `{}` | editor options plus `options.tv` for export |
-| `tvSurface` | Boolean | `true` | paint the editing surface with the TV background |
+| `tvSurface` | Boolean | `true` | apply the TV content styles to the editing surface |
 | `readonly` | Boolean | `false` | |
 | `minHeight` / `maxHeight` | String | `320px` / `60vh` | |
 | `dark` | Boolean | `false` | editor chrome theme (not the document theme) |
 
 ### Events
 
-`update:modelValue`, `update:theme`, `change`, `init` (hands over the `Editor`
+`update:modelValue`, `update:fonts`, `change`, `init` (hands over the `Editor`
 instance), `export`.
 
 ### Methods (via `ref`)
@@ -150,67 +147,26 @@ A colon typed manually at the end of a label is stripped so it never doubles up.
 
 ---
 
-## Background theme
+## No background theme — text colour only
 
-Default is **neutral white with black text**. Operators switch it from the
-*Background* select, the ◐ button, or `Ctrl/Cmd+Shift+L`.
+There is **no background theme**. The editing surface is a plain neutral white,
+and the exported document paints no background — the Android TV player composes
+its own wallpaper behind a transparent WebView.
 
-| Name | Background | Text |
-|---|---|---|
-| `light` | `#ffffff` | `#14181d` **(default)** |
-| `paper` | `#f4f1ea` | `#1a1815` |
-| `dark` | `#0f1216` | `#f2f5f8` |
-| `midnight` | `#0b1a2b` | `#eaf2fb` |
-| `brand` | Smartiv blue gradient | `#ffffff` |
-
-The theme is document state, not per-selection formatting: one value drives the
-editing surface, the preview and the exported file.
-
-```vue
-<SmartivEditor v-model="html" v-model:theme="theme" />
-```
-
-Store `theme` alongside the HTML and pass it back on load, or pin it from the
-host with `:theme="'dark'"`.
-
-Each preset also carries `--sv-rule` and `--sv-rule-soft` (panel dividers, table
-borders) so they stay visible on light and dark alike — without `color-mix()`,
-which is not guaranteed on older Android TV WebViews.
-
-Custom theme:
-
-```js
-import { THEMES } from '@smartiv/html-editor';
-
-THEMES.hospital = {
-  text: 'Hospital green',
-  background: '#f2f8f5',
-  color: '#0f2a1e',
-  rule: 'rgba(0,0,0,.16)',
-  ruleSoft: 'rgba(0,0,0,.05)'
-};
-```
-
----
-
-## Text colour is independent of the background
-
-The theme only sets the document default. An explicit colour is written as an
-inline style on a `<span>`, which outranks the theme in the cascade:
+Colour comes from the operator, per run, via the toolbar colour picker. It is
+written as an inline style on a `<span>`:
 
 ```html
 <dd><span style="color: #ffffff">Media Team</span></dd>
 ```
 
-Consequences, all intended:
-
-- White text stays white after switching the background to `light`, and black
-  text stays black after switching to `dark`. The two settings never overwrite
-  each other.
 - The colour travels inside the HTML, so it reaches the Android TV document
   exactly as authored — no extra column, no second payload.
-- *Clear* (in the colour popup) removes the inline colour and hands the run back
-  to the theme default. It does not paint a colour on top.
+- On a dark wallpaper, pick a light text colour; on a light one, a dark colour.
+  Text with no explicit colour falls back to the player's default (the Android
+  `fontColor` param, or `#14181d`).
+- *Clear* (in the colour popup) removes the inline colour. It does not paint a
+  colour on top.
 
 The popup offers preset swatches plus a native colour input for any hex value.
 Highlight colour (`background-color`) works the same way.

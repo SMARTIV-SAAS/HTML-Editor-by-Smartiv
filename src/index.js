@@ -28,7 +28,6 @@ export { linkPlugin } from './plugins/link.js';
 export { tablePlugin } from './plugins/table.js';
 export { sourceViewPlugin } from './plugins/sourceView.js';
 export { tvPlugin } from './plugins/tv.js';
-export { themePlugin, THEMES, DEFAULT_THEME, resolveTheme } from './plugins/theme.js';
 export { FONTS, fontStack, fontOptions, fontFaceCss, legacyFontClassCss, usedFonts, usedFontNames } from './fonts.js';
 
 export { default as SmartivFontManager } from './ui/FontManager.vue';
