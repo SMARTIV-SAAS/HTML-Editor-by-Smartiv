@@ -6,12 +6,39 @@
  * changes nothing in the content: getContent, the stored HTML, the TV output
  * and the export are all untouched — the dark background lives purely on the
  * editing surface via CSS variables, never as inline styles on the content.
+ *
+ * The choice is remembered in localStorage (a per-viewer convenience), so the
+ * operator does not have to flip it every time. Reads and writes are guarded:
+ * a private window or blocked storage simply falls back to light.
  */
+const DEFAULT_KEY = 'smartiv-editor:dark-mode';
+
 export function surfacePlugin(editor) {
-  editor.darkMode = false;
+  const remember = editor.options.rememberDarkMode !== false;
+  const key = editor.options.darkModeKey ?? DEFAULT_KEY;
+
+  const readStored = () => {
+    if (!remember) return false;
+    try {
+      return localStorage.getItem(key) === '1';
+    } catch {
+      return false;
+    }
+  };
+  const writeStored = (on) => {
+    if (!remember) return;
+    try {
+      localStorage.setItem(key, on ? '1' : '0');
+    } catch {
+      /* private window / storage disabled — the toggle still works this session */
+    }
+  };
+
+  editor.darkMode = readStored();
 
   editor.addCommand('toggleDarkMode', () => {
     editor.darkMode = !editor.darkMode;
+    writeStored(editor.darkMode);
     editor.events.emit('dark-mode', editor.darkMode);
     return true;
   });

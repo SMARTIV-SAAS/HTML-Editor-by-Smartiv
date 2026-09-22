@@ -110,6 +110,10 @@ onMounted(() => {
   });
   for (const plugin of props.plugins) instance.use(plugin);
 
+  // Apply the remembered dark-mode preference the surface plugin read from
+  // localStorage (undefined when that plugin is not loaded).
+  darkMode.value = instance.darkMode ?? false;
+
   instance.events.on('change', (html) => {
     syncing = true;
     words.value = countWords(html);
