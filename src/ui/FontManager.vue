@@ -111,7 +111,7 @@ function faceSummary(font) {
 
         <label class="sv-fonts__field">
           <span>Family name</span>
-          <input v-model="family" type="text" placeholder="Brand Sans" required />
+          <input v-model="family" type="text" placeholder="Montserrat" required />
           <small>
             This is the name @font-face declares, so it can be anything — it does
             not have to match the name inside the file. It must be unique, and it
@@ -122,7 +122,7 @@ function faceSummary(font) {
 
         <label class="sv-fonts__field">
           <span>Display label <em>(optional)</em></span>
-          <input v-model="label" type="text" :placeholder="family || 'Brand Sans'" />
+          <input v-model="label" type="text" :placeholder="family || 'Montserrat'" />
         </label>
 
         <div class="sv-fonts__row">
