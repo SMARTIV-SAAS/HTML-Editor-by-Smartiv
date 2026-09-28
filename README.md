@@ -368,8 +368,10 @@ app.use(SmartivEditorPlugin, {
 `@update:fonts` reports the families that screen actually uses — store it on the
 row so the player can warm its cache before the screen is due.
 
-**Backend contract.** `GET /api/fonts` returns the uploaded families; standard
-fonts are added by the store and never come from the API:
+**Backend contract.** Full DB mapping, endpoints, file storage and the Android
+player wiring are in **[BACKEND.md](BACKEND.md)** — hand that to your backend
+team. In short: `GET /api/fonts` returns the uploaded families; standard fonts
+are added by the store and never come from the API:
 
 ```json
 [{ "id": 7, "label": "Brand Sans", "family": "Brand Sans",
