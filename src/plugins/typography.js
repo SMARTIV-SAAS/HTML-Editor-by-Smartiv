@@ -166,8 +166,35 @@ function currentStyle(editor, prop, options) {
   const el = editor.selection.element();
   if (!el) return '';
   const computed = getComputedStyle(el)[prop];
-  const match = options.find((o) => normalize(o.value) === normalize(computed));
+  const match = options.find((o) => sameStyleValue(o.value, computed, el));
   return match?.value ?? '';
+}
+
+/**
+ * Whether an option value and the resolved computed value are the same size.
+ * The options are authored in rem but getComputedStyle always reports px, so a
+ * plain string compare never matches and the Size dropdown would show its
+ * placeholder even after a size was applied. Resolve both to px for lengths;
+ * fall back to a normalised string compare for everything else (font-family).
+ */
+function sameStyleValue(a, b, el) {
+  const pa = toPx(a, el);
+  const pb = toPx(b, el);
+  if (pa != null && pb != null) return Math.abs(pa - pb) < 0.5;
+  return normalize(a) === normalize(b);
+}
+
+function toPx(value, el) {
+  const m = String(value).trim().match(/^(-?[\d.]+)(px|rem|em)$/i);
+  if (!m) return null;
+  const n = parseFloat(m[1]);
+  const unit = m[2].toLowerCase();
+  if (unit === 'px') return n;
+  const doc = el.ownerDocument;
+  const rootPx = parseFloat(getComputedStyle(doc.documentElement).fontSize) || 16;
+  if (unit === 'rem') return n * rootPx;
+  const parentPx = parseFloat(getComputedStyle(el.parentElement || el).fontSize) || rootPx;
+  return n * parentPx; // em, relative to the parent's font-size
 }
 
 /**

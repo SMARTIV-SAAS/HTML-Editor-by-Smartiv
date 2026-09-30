@@ -139,6 +139,13 @@ export class Editor {
       return false;
     }
     this.root.focus({ preventScroll: true });
+    // A native <select> or other toolbar control steals focus and drops the text
+    // selection before its change event fires, so by the time the command runs
+    // the selection is gone and it would apply to an empty caret. Restore the
+    // last range seen inside the root when the live selection has left it.
+    if (!sel.getRange(this.root) && this._lastRange) {
+      sel.setRange(this.root, this._lastRange);
+    }
     const result = fn(value, this);
     this._changed();
     return result;
@@ -296,7 +303,13 @@ export class Editor {
       if (e.dataTransfer?.types?.includes('Files')) e.preventDefault();
     };
 
-    const onSelection = () => this.events.emit('selectionchange');
+    const onSelection = () => {
+      // Remember the last selection that lived inside the editor, so a command
+      // fired from a control that stole focus can restore it (see execCommand).
+      const r = sel.getRange(root);
+      if (r) this._lastRange = r.cloneRange();
+      this.events.emit('selectionchange');
+    };
     const onCompositionStart = () => { this._composing = true; };
     const onCompositionEnd = () => { this._composing = false; onInput(); };
 

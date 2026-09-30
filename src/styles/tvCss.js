@@ -130,11 +130,13 @@ export const TV_CSS = String.raw`
 .sv-panels[data-sv-columns="1"] { --sv-panel-columns: 1; }
 .sv-panels[data-sv-columns="3"] { --sv-panel-columns: 3; }
 
-/* Single panel: no divider, and a measure cap so lines stay readable at 3m. */
+/* Single panel: fill the width so text-align (centre/right) is relative to the
+   whole panel, not a narrow measure box. A reading-measure can still be opted
+   into per screen by setting --sv-panel-measure to a length. */
 .sv-panels[data-sv-columns="1"] > .sv-panel {
   border-right: 0;
   padding-right: 0;
-  max-width: var(--sv-panel-measure, 34em);
+  max-width: var(--sv-panel-measure, none);
 }
 
 .sv-panel {
