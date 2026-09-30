@@ -1,9 +1,9 @@
-# @smartiv/html-editor
+# smartiv-editor
 
 **By [Smartiv](https://www.smartiv.tv)** · © 2026 Smartiv · [MIT license](LICENSE)
 
 ```bash
-npm install @smartiv/html-editor
+npm install smartiv-editor
 ```
 
 A self-contained HTML editor plugin for Vue 3, built for Android TV signage
@@ -45,8 +45,8 @@ npm run build    # library bundle into dist/
 
 ```js
 import { createApp } from 'vue';
-import SmartivEditorPlugin from '@smartiv/html-editor';
-import '@smartiv/html-editor/style.css';
+import SmartivEditorPlugin from 'smartiv-editor';
+import 'smartiv-editor/style.css';
 
 createApp(App).use(SmartivEditorPlugin).mount('#app');
 ```
@@ -70,7 +70,7 @@ function saveToCms({ html }) { /* POST to the API */ }
 Without `app.use`, import the component directly:
 
 ```js
-import { SmartivEditor } from '@smartiv/html-editor';
+import { SmartivEditor } from 'smartiv-editor';
 ```
 
 ### Props
@@ -221,7 +221,7 @@ blocks. Deleting it by hand in HTML source mode is harmless: it comes back on
 the next save. Set `options.documentMarker: false` to store bare fragments.
 
 ```js
-import { isSmartivHtml, documentVersion } from '@smartiv/html-editor';
+import { isSmartivHtml, documentVersion } from 'smartiv-editor';
 
 isSmartivHtml(row.html)     // false for legacy content
 documentVersion(row.html)   // 1 for Smartiv, 0 for legacy
@@ -302,7 +302,7 @@ operator-authored HTML.
 or scripts, `<meta viewport width=1920>`.
 
 ```js
-import { buildDocument } from '@smartiv/html-editor';
+import { buildDocument } from 'smartiv-editor';
 
 const html = buildDocument(contentHtml, {
   title: 'Smartiv Room Display',
@@ -351,7 +351,7 @@ selectable in every editor, **including ones already mounted on other routes**,
 with no reload.
 
 ```js
-import SmartivEditorPlugin, { createFontStore, createRestTransport } from '@smartiv/html-editor';
+import SmartivEditorPlugin, { createFontStore, createRestTransport } from 'smartiv-editor';
 
 app.use(SmartivEditorPlugin, {
   fonts: createFontStore({
@@ -608,7 +608,7 @@ navigation inside the editor (the editor runs in the desktop CMS, not on the TV)
 
 © 2026 Smartiv. Released under the **[MIT license](LICENSE)** — free to use, copy,
 modify and redistribute, provided the copyright and licence notice are kept.
-Published on npm as [`@smartiv/html-editor`](https://www.npmjs.com/package/@smartiv/html-editor).
+Published on npm as [`smartiv-editor`](https://www.npmjs.com/package/smartiv-editor).
 
 The editor stamps each document it saves with `data-sv-doc="1"`. That is a
 **format marker**, not a watermark — the player reads it to choose the right

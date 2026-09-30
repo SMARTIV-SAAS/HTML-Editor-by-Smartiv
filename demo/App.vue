@@ -63,7 +63,7 @@ const welcomeFonts = ref([]);
       <h2 style="font-size:14px;margin:0 0 8px;color:#5b6773">Room display</h2>
       <SmartivEditor
         v-model="roomScreen"
-        :options="{ tv, autoDownload: false }"
+        :options="{ tv, autoDownload: false, fontBundledBase: '/bundled-fonts/' }"
         min-height="360px"
         @update:fonts="roomFonts = $event"
       />
@@ -76,7 +76,7 @@ const welcomeFonts = ref([]);
       <h2 style="font-size:14px;margin:0 0 8px;color:#5b6773">Welcome screen</h2>
       <SmartivEditor
         v-model="welcomeScreen"
-        :options="{ tv, autoDownload: false }"
+        :options="{ tv, autoDownload: false, fontBundledBase: '/bundled-fonts/' }"
         min-height="260px"
         @update:fonts="welcomeFonts = $event"
       />

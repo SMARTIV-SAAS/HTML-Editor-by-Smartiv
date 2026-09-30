@@ -148,6 +148,84 @@
 .sv-select.is-disabled { opacity: .45; }
 .sv-select.is-disabled select { cursor: default; }
 
+/* -------------------------------------------------- font picker (with preview) */
+.sv-fontpick { position: relative; display: inline-flex; }
+.sv-fontpick__btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  height: 32px;
+  padding: 0 26px 0 10px;
+  border: 1px solid var(--sv-ui-border-strong);
+  border-radius: var(--sv-ui-radius-sm);
+  background: var(--sv-ui-bg);
+  color: var(--sv-ui-fg);
+  font: inherit;
+  font-size: 14px;
+  line-height: 1;
+  cursor: pointer;
+  transition: border-color .12s ease, box-shadow .12s ease;
+}
+.sv-fontpick__btn:hover { border-color: var(--sv-ui-accent); }
+.sv-fontpick.is-open .sv-fontpick__btn,
+.sv-fontpick__btn:focus-visible {
+  outline: none;
+  border-color: var(--sv-ui-accent);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--sv-ui-accent) 22%, transparent);
+}
+.sv-fontpick__label {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.sv-fontpick .sv-select__caret { right: 8px; }
+.sv-fontpick.is-disabled { opacity: .45; pointer-events: none; }
+
+.sv-fontpick__panel {
+  position: absolute;
+  z-index: 30;
+  top: calc(100% + 6px);
+  left: 0;
+  min-width: 220px;
+  max-height: 340px;
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--sv-ui-border);
+  border-radius: var(--sv-ui-radius);
+  background: var(--sv-ui-bg);
+  box-shadow: 0 12px 32px -8px rgba(20, 30, 48, .35);
+}
+.sv-fontpick__grouplabel {
+  padding: 8px 10px 4px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+  color: var(--sv-ui-muted);
+}
+.sv-fontpick__group + .sv-fontpick__group { margin-top: 2px; }
+.sv-fontpick__opt {
+  display: block;
+  width: 100%;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: var(--sv-ui-radius-sm);
+  background: transparent;
+  color: var(--sv-ui-fg);
+  font-size: 19px;
+  line-height: 1.2;
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  cursor: pointer;
+}
+.sv-fontpick__opt:hover { background: var(--sv-ui-hover, color-mix(in srgb, var(--sv-ui-accent) 12%, transparent)); }
+.sv-fontpick__opt.is-current {
+  background: color-mix(in srgb, var(--sv-ui-accent) 16%, transparent);
+  font-weight: 600;
+}
+
 /* ---------------------------------------------------------------- color popup */
 .sv-color { position: relative; }
 .sv-btn--color { flex-direction: column; gap: 2px; padding-top: 3px; }

@@ -44,6 +44,17 @@ const optionGroups = computed(() => {
   return groups;
 });
 
+// Label for the currently selected font, shown on the picker's trigger button.
+const currentLabel = computed(() => {
+  const match = options.value.find((o) => o.value === currentValue.value);
+  return match?.text ?? props.item.label;
+});
+
+function choose(value) {
+  open.value = false;
+  run(value);
+}
+
 const swatches = computed(() => props.item.swatches ?? [
   '#ffffff', '#e6edf3', '#9aa7b4', '#5b6773', '#1c2430', '#000000', '#ffd166', '#f4a261',
   '#e63946', '#d62828', '#f77f00', '#fcbf49', '#2a9d8f', '#43aa8b', '#0b63c5', '#1fbfd4'
@@ -69,7 +80,7 @@ function clear() {
 }
 
 function onClickOutside(e) {
-  if (!e.target.closest?.('.sv-color')) open.value = false;
+  if (!e.target.closest?.('.sv-color, .sv-fontpick')) open.value = false;
 }
 document.addEventListener('click', onClickOutside);
 onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
@@ -77,6 +88,63 @@ onBeforeUnmount(() => document.removeEventListener('click', onClickOutside));
 
 <template>
   <div v-if="item.type === 'separator'" class="sv-toolbar__sep" />
+
+  <div
+    v-else-if="item.type === 'select' && item.preview"
+    class="sv-fontpick"
+    :class="{ 'is-disabled': !isEnabled, 'is-open': open }"
+  >
+    <button
+      type="button"
+      class="sv-fontpick__btn"
+      :style="{ width: item.width ? item.width + 'px' : null, fontFamily: currentValue || null }"
+      :title="item.label"
+      :aria-label="item.label"
+      :aria-expanded="open"
+      :disabled="!isEnabled"
+      @mousedown.prevent
+      @click.stop="open = !open"
+    >
+      <span class="sv-fontpick__label">{{ currentLabel }}</span>
+      <svg class="sv-select__caret" viewBox="0 0 24 24" width="14" height="14" aria-hidden="true">
+        <path d="M7 10l5 5 5-5" fill="none" stroke="currentColor" stroke-width="2"
+          stroke-linecap="round" stroke-linejoin="round" />
+      </svg>
+    </button>
+    <div v-if="open" class="sv-fontpick__panel" role="listbox">
+      <template v-if="optionGroups">
+        <div v-for="g in optionGroups" :key="g.label" class="sv-fontpick__group">
+          <div class="sv-fontpick__grouplabel">{{ g.label }}</div>
+          <button
+            v-for="opt in g.items"
+            :key="opt.value"
+            type="button"
+            role="option"
+            class="sv-fontpick__opt"
+            :class="{ 'is-current': opt.value === currentValue }"
+            :aria-selected="opt.value === currentValue"
+            :style="{ fontFamily: opt.value }"
+            @mousedown.prevent
+            @click="choose(opt.value)"
+          >{{ opt.text }}</button>
+        </div>
+      </template>
+      <template v-else>
+        <button
+          v-for="opt in options"
+          :key="opt.value"
+          type="button"
+          role="option"
+          class="sv-fontpick__opt"
+          :class="{ 'is-current': opt.value === currentValue }"
+          :aria-selected="opt.value === currentValue"
+          :style="{ fontFamily: opt.value }"
+          @mousedown.prevent
+          @click="choose(opt.value)"
+        >{{ opt.text }}</button>
+      </template>
+    </div>
+  </div>
 
   <label
     v-else-if="item.type === 'select'"

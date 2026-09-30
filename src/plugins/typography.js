@@ -14,13 +14,24 @@
 import { FONTS, fontOptions } from '../fonts.js';
 
 export function typographyPlugin(editor) {
+  // A plain numeric list like a word processor. Values stay in rem so the whole
+  // document still scales between the 1080p and 720p panels by the root font-size
+  // alone; the label is the pixel size at the 16px root, which is the number the
+  // operator recognises. (px = rem × 16.)
   const sizes = editor.options.fontSizes ?? [
-    { value: '1rem', text: 'Small (16)' },
-    { value: '1.5rem', text: 'Normal (24)' },
-    { value: '2rem', text: 'Medium (32)' },
-    { value: '2.5rem', text: 'Large (40)' },
-    { value: '3.5rem', text: 'Title (56)' },
-    { value: '4.5rem', text: 'Display (72)' }
+    { value: '0.75rem', text: '12' },
+    { value: '0.875rem', text: '14' },
+    { value: '1rem', text: '16' },
+    { value: '1.125rem', text: '18' },
+    { value: '1.25rem', text: '20' },
+    { value: '1.5rem', text: '24' },
+    { value: '1.75rem', text: '28' },
+    { value: '2rem', text: '32' },
+    { value: '2.25rem', text: '36' },
+    { value: '2.75rem', text: '44' },
+    { value: '3.5rem', text: '56' },
+    { value: '4.5rem', text: '72' },
+    { value: '6rem', text: '96' }
   ];
 
   // `fontCatalog` is the merged list the host supplies — bundled fonts plus
@@ -45,7 +56,12 @@ export function typographyPlugin(editor) {
     value: () => currentStyle(editor, 'fontSize', sizes)
   });
   editor.ui.addSelect('fontFamily', {
-    label: 'Font', width: 160, options: fonts, command: 'fontFamily',
+    label: 'Font', width: 168, options: fonts, command: 'fontFamily',
+    // Render each option in its own face so the operator sees the font, not just
+    // its name. Needs a custom popup — native <option> font-family is ignored by
+    // Chrome. The preview only shows the real face when the host injected the
+    // @font-face (bundledBase/remoteBase); otherwise it degrades to the fallback.
+    preview: true,
     value: () => currentStyle(editor, 'fontFamily', fonts())
   });
   editor.ui.addColor('foreColor', {
