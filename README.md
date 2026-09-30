@@ -1,6 +1,10 @@
 # @smartiv/html-editor
 
-**By [Smartiv](https://www.smartiv.tv)** · © 2026 Smartiv · [Proprietary license](LICENSE)
+**By [Smartiv](https://www.smartiv.tv)** · © 2026 Smartiv · [MIT license](LICENSE)
+
+```bash
+npm install @smartiv/html-editor
+```
 
 A self-contained HTML editor plugin for Vue 3, built for Android TV signage
 output. The core, the plugins and the sanitizer are all written here — there is
@@ -602,11 +606,9 @@ navigation inside the editor (the editor runs in the desktop CMS, not on the TV)
 - Website: [www.smartiv.tv](https://www.smartiv.tv)
 - Repository: `SMARTIV-SAAS/HTML-Editor-by-Smartiv`
 
-© 2026 Smartiv. All rights reserved. See [LICENSE](LICENSE).
-
-The source is published for reference and evaluation only — it is **not** open
-source. Using, copying, modifying or redistributing it requires written
-permission from Smartiv.
+© 2026 Smartiv. Released under the **[MIT license](LICENSE)** — free to use, copy,
+modify and redistribute, provided the copyright and licence notice are kept.
+Published on npm as [`@smartiv/html-editor`](https://www.npmjs.com/package/@smartiv/html-editor).
 
 The editor stamps each document it saves with `data-sv-doc="1"`. That is a
 **format marker**, not a watermark — the player reads it to choose the right

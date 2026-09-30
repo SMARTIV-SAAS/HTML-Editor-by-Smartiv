@@ -1,7 +1,28 @@
 {
   "name": "@smartiv/html-editor",
-  "version": "0.1.0",
+  "version": "1.1.0",
   "description": "Custom HTML editor plugin for Vue 3, tuned for Android TV signage output",
+  "license": "MIT",
+  "author": "Smartiv (https://www.smartiv.tv)",
+  "homepage": "https://github.com/SMARTIV-SAAS/HTML-Editor-by-Smartiv#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/SMARTIV-SAAS/HTML-Editor-by-Smartiv.git"
+  },
+  "bugs": {
+    "url": "https://github.com/SMARTIV-SAAS/HTML-Editor-by-Smartiv/issues"
+  },
+  "keywords": [
+    "vue",
+    "vue3",
+    "html-editor",
+    "wysiwyg",
+    "rich-text",
+    "contenteditable",
+    "digital-signage",
+    "android-tv",
+    "smartiv"
+  ],
   "type": "module",
   "main": "./dist/smartiv-editor.umd.cjs",
   "module": "./dist/smartiv-editor.js",
@@ -13,12 +34,17 @@
     "./style.css": "./dist/style.css"
   },
   "files": ["dist", "src"],
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build && node scripts/emit-tv-css.mjs",
     "build:android-assets": "npm run build && node scripts/sync-android-assets.mjs",
     "build:tvcss": "node scripts/emit-tv-css.mjs",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "prepare": "npm run build",
+    "prepublishOnly": "npm run build"
   },
   "peerDependencies": {
     "vue": "^3.3.0"
