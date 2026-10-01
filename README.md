@@ -580,7 +580,18 @@ This matters because the result is executed by a WebView on the signage device.
 
 ---
 
-## Status (1.0.4)
+## Status (npm 1.1.1)
+
+Published on npm as **`@smartiv.tv/html-editor`** (the Android AAR is versioned
+separately on JitPack — see [`android/README.md`](android/README.md)).
+
+New in 1.1:
+- **Font dropdown previews each family in its own face** — pick a font by seeing
+  it, like a word processor.
+- **Numeric font sizes** (12–96) instead of named tiers; values stay in `rem` so
+  the document still scales by the root font-size.
+- Fixes: the Size dropdown now reflects the selected text's size, and a single
+  column no longer boxes centre/right alignment to a narrow measure.
 
 Working: inline formatting (bold/italic/underline/strikethrough, plus `code`,
 `mark`, `small`, `del`, `ins`, `sub`, `sup`, `abbr`), blocks and headings
