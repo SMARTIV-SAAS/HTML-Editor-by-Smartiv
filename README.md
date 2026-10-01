@@ -36,10 +36,11 @@ than something an operator has to work around:
 ## Install
 
 ```bash
-npm install
-npm run dev      # demo on http://localhost:5177
-npm run build    # library bundle into dist/
+npm install @smartiv.tv/html-editor
 ```
+
+Then use it in Vue 3 (below). To work on this repo instead, see
+[Local development](#local-development).
 
 ## Use in Vue 3
 
@@ -607,6 +608,20 @@ theme; text colour is set per run and travels inline.
 
 Not included: images (deliberately — see above), find & replace, D-pad
 navigation inside the editor (the editor runs in the desktop CMS, not on the TV).
+
+---
+
+## Local development
+
+Only needed to work on this repo (not to use the package):
+
+```bash
+git clone https://github.com/SMARTIV-SAAS/HTML-Editor-by-Smartiv.git
+cd HTML-Editor-by-Smartiv/smartiv-editor
+npm install
+npm run dev      # demo on http://localhost:5177
+npm run build    # library bundle into dist/
+```
 
 ---
 
