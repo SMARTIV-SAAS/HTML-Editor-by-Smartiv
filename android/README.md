@@ -298,6 +298,7 @@ against a backgrounded view.
 | Symptom | Cause | Fix |
 |---|---|---|
 | Labels stack, colons gone | `tv.css` not loaded | confirm `assets/smartiv/tv.css` exists; check the `readAsset` log line |
+| Opaque white box over the wallpaper (transparent mode) | TV ROM reset the WebView surface after load | fixed in `HtmlView`: it re-asserts `Color.TRANSPARENT` in `onPageFinished` and forces `background: transparent !important` on html/body/wrappers. If a specific chipset still shows it, add `webView.setLayerType(View.LAYER_TYPE_SOFTWARE, null)` |
 | Custom font shows as a fallback | file not cached yet, or family name mismatch | prefetch before paint; confirm `remoteFontFaceCss` family matches the `font-family` in the HTML |
 | Light theme renders dark | WebView algorithmic darkening | already disabled in `HtmlView`; verify `androidx.webkit` is on the classpath |
 | White flash on screen change | background painted late | `HtmlView` sets the theme colour up front — make sure `theme` is passed |

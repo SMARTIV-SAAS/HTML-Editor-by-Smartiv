@@ -155,7 +155,7 @@ fun HtmlView(
         }
     }
 
-    val document = remember(htmlContent, screenTheme, rootFontSize, fontColor, safeArea, designWidthPx, isAutoScroll, isCentered, tvCss, fontsCss, remoteFontFaceCss) {
+    val document = remember(htmlContent, screenTheme, rootFontSize, fontColor, safeArea, designWidthPx, isAutoScroll, isCentered, transparentBackground, tvCss, fontsCss, remoteFontFaceCss) {
         buildDocument(
             htmlContent = htmlContent,
             tvCss = tvCss,
@@ -166,7 +166,8 @@ fun HtmlView(
             safeArea = safeArea,
             designWidthPx = designWidthPx,
             enableAutoScroll = isAutoScroll,
-            isCentered = isCentered
+            isCentered = isCentered,
+            transparent = transparentBackground
         )
     }
 
@@ -212,6 +213,12 @@ fun HtmlView(
 
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view, url)
+                        // Some TV ROMs reset the surface to opaque white after a
+                        // load, which paints over the signage wallpaper. Re-assert
+                        // transparency here, not only at factory time.
+                        if (transparentBackground) {
+                            view?.setBackgroundColor(Color.TRANSPARENT)
+                        }
                         // Scripts only exist once the page is parsed; the old code
                         // also fired this straight after load(), where it was a no-op.
                         if (isAutoScroll) view?.evaluateJavascript("startAutoScroll();", null)
@@ -299,10 +306,24 @@ private fun buildDocument(
     safeArea: String,
     designWidthPx: Int,
     enableAutoScroll: Boolean,
-    isCentered: Boolean
+    isCentered: Boolean,
+    transparent: Boolean
 ): String {
     val smartiv = isSmartivContent(htmlContent)
     val textColor = fontColor?.let { String.format("#%06X", 0xFFFFFF and it.toArgb()) } ?: theme.color
+
+    // Transparent mode: never paint a page/wrapper background, so the player's
+    // wallpaper shows through. `!important` beats any opaque colour the content
+    // might carry inline (e.g. an exported `style="background:#fff"` on a
+    // wrapper); the theme's own background is not emitted here in the first place,
+    // so only text/colour tokens of the theme apply.
+    val transparentCss = if (transparent) """
+        html, body { background: transparent !important; }
+        body.sv-tv, body.legacy,
+        .sv-tv__safe, .sv-doc, [data-sv-doc],
+        .sv-panels, .sv-panel,
+        .ql-container, .ql-editor { background: transparent !important; }
+    """.trimIndent() else ""
 
     val bodyClass = if (smartiv) "sv-tv" else "legacy"
     val body = if (smartiv) {
@@ -341,6 +362,7 @@ $fontsCss
 ${legacyCss(textColor, rootFontSize)}
 $tvCss
 $centerCss
+$transparentCss
 </style>
 ${autoScrollScript(enableAutoScroll)}
 </head>
