@@ -297,10 +297,40 @@ operator-authored HTML.
 
 ---
 
+## Bundled fonts (make the defaults render & travel)
+
+The 12 default faces ship **inside the package** at `dist/fonts/`. They are not
+loaded automatically — the editor needs a URL to read them from, so that the
+preview, the export, and the TV player all use byte-identical files (this is
+what stops the font looking different in each place). One setup does all three:
+
+1. **Serve the files.** Copy the folder into your app's static dir, e.g.
+   `cp -r node_modules/@smartiv.tv/html-editor/dist/fonts public/fonts`
+   (or, in Vite, import them with `?url` — the package exports `./fonts/*`).
+2. **Point the editor at them** with `fontBundledBase`:
+
+```vue
+<SmartivEditor
+  v-model="html"
+  :options="{ fontBundledBase: '/fonts/', fontRemoteBase: '/api/fonts-files/', tv: { /* … */ } }"
+/>
+```
+
+With `fontBundledBase` set, the preview shows the real faces **and**
+`exportTv()` embeds each used face as base64 — so the exported HTML carries its
+own fonts to the TV. `fontRemoteBase` does the same for operator-uploaded fonts.
+`bundledFontFiles()` lists the file names if you need a manifest.
+
+**So yes — the font travels CMS → TV inside the exported HTML.** Without a base,
+the editor falls back to system fonts and the export cannot embed them.
+
+---
+
 ## Android TV output
 
-`exportTv()` produces one complete HTML document: inline CSS, no external fonts
-or scripts, `<meta viewport width=1920>`.
+`exportTv()` produces one complete HTML document: inline CSS, fonts embedded as
+base64 (when a base is set), no external scripts, `<meta viewport width=1920>`.
+It is **async** — await it.
 
 ```js
 import { buildDocument } from '@smartiv.tv/html-editor';

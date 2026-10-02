@@ -114,6 +114,17 @@ export function fileFonts(fonts) {
   return fonts.filter((f) => facesOf(f).length > 0);
 }
 
+/**
+ * File names of the bundled faces, as shipped under the package's `dist/fonts/`.
+ * A CMS serves these at some path and points `fontBundledBase` at it, so the
+ * editor preview and the standalone export both read byte-identical files.
+ */
+export function bundledFontFiles(fonts = FONTS) {
+  return fileFonts(fonts)
+    .filter((f) => f.source !== 'remote')
+    .flatMap((f) => facesOf(f).map((face) => face.file));
+}
+
 /** The CSS font-family value written into the document. */
 export function fontStack(font) {
   if (font.stack) return font.stack;

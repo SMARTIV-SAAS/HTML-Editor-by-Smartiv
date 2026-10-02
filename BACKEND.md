@@ -272,4 +272,49 @@ appear in every editor's dropdown automatically.
 
 ---
 
+## 9. Default (bundled) fonts — serve them too
+
+The 12 standard faces are **not** uploaded fonts, so they are not in the tables
+above. They ship inside the npm package at
+`node_modules/@smartiv.tv/html-editor/dist/fonts/`. The CMS must serve this
+folder at a URL and pass it to the editor as `fontBundledBase`, exactly like the
+uploaded-font base:
+
+```
+cp -r node_modules/@smartiv.tv/html-editor/dist/fonts  public/fonts
+# editor option: fontBundledBase: '/fonts/'
+```
+
+Why it matters: with the base set, the editor **embeds the used faces as base64
+into the exported HTML**, so the font travels to the TV inside the document.
+Without it, both default and uploaded fonts fall back to a system face on the
+player, which is the "font looks different on TV" symptom.
+
+`bundledFontFiles()` (exported by the package) lists the file names if you want
+to serve them from object storage alongside the uploaded ones.
+
+---
+
+## 10. What to store for the player
+
+The Android TV viewer is a **bare, transparent renderer** — it adds no CSS, no
+fonts, no theme. So store the **self-contained export**, not the editing
+fragment:
+
+```js
+const page = await editorRef.exportTv();   // async: fonts are fetched + embedded
+// persist `page` on the screen row; hand `page` straight to the WebView
+```
+
+`exportTv()` inlines the layout CSS, bakes colour and alignment inline, embeds
+the used fonts as base64, and paints no opaque background. The `fonts` column
+(§2.3) is still worth storing for search/analytics, but the player no longer
+needs it to render — everything it needs is inside the exported HTML.
+
+> Storing the raw `v-model` fragment instead only works with the **older** AAR
+> viewer that injected `tv.css` + `fonts.css` itself. The bare renderer needs the
+> export.
+
+---
+
 © 2026 Smartiv. See [LICENSE](LICENSE).
