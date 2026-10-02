@@ -1,6 +1,6 @@
 {
   "name": "@smartiv.tv/html-editor",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "Custom HTML editor plugin for Vue 3, tuned for Android TV signage output",
   "license": "MIT",
   "author": "Smartiv (https://www.smartiv.tv)",
