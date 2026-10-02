@@ -9,7 +9,7 @@
  */
 import { TV_CSS } from '../styles/tvCss.js';
 import { bakeColons } from '../core/output.js';
-import { FONTS, fontFaceCss, usedFonts } from '../fonts.js';
+import { FONTS, fontFaceCss, embeddedFontFaceCss, usedFonts } from '../fonts.js';
 
 export function tvPlugin(editor) {
   /**
@@ -58,8 +58,27 @@ export function tvPlugin(editor) {
     return true;
   });
 
-  editor.addCommand('exportTv', () => {
-    const html = buildDocument(editor.getContent(), editor.options.tv ?? {});
+  editor.addCommand('exportTv', async () => {
+    const tv = editor.options.tv ?? {};
+    const body = editor.getContent();
+    const catalog = tv.fontCatalog ?? editor.fontCatalog ?? FONTS;
+    // Fall back to the editor-level bases so the export embeds the same fonts
+    // the editor previews, without the host having to repeat them under `tv`.
+    const bundledBase = tv.fontBundledBase ?? editor.options.fontBundledBase ?? null;
+    const remoteBase = tv.fontRemoteBase ?? editor.options.fontRemoteBase ?? null;
+
+    // Inline the used fonts as base64 so the file renders offline in a viewer
+    // that has no asset base and no network — the signage case. Needs a base to
+    // fetch the files from; without one the document keeps url() references.
+    let facesCss = null;
+    if (bundledBase || remoteBase) {
+      facesCss = await embeddedFontFaceCss(
+        { bundledBase, remoteBase },
+        usedFonts(body, catalog)
+      );
+    }
+
+    const html = buildDocument(body, { ...tv, fontBundledBase: bundledBase, fontRemoteBase: remoteBase, fontCatalog: catalog, facesCss });
     editor.events.emit('export', { filename: 'smartiv-screen.html', html });
     return html;
   });
@@ -110,17 +129,21 @@ export function buildDocument(bodyHtml, opts = {}) {
     // open anywhere sets them to CMS URLs.
     fontBundledBase = null,
     fontRemoteBase = null,
-    fontCatalog = FONTS
+    fontCatalog = FONTS,
+    // Pre-built @font-face block. The async export passes base64-embedded faces
+    // here so the document is self-contained; left null, faces are generated as
+    // url() references from the bases below (used by the live preview).
+    facesCss = null
   } = opts;
 
   // Only the families this document actually uses — a screen on bundled fonts
   // alone then issues no font request at all.
-  const faces = (fontBundledBase || fontRemoteBase)
+  const faces = facesCss ?? ((fontBundledBase || fontRemoteBase)
     ? fontFaceCss(
         { bundledBase: fontBundledBase, remoteBase: fontRemoteBase },
         usedFonts(bodyHtml, fontCatalog)
       )
-    : '';
+    : '');
 
   return `<!doctype html>
 <html lang="en">

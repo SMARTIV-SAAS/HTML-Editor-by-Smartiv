@@ -181,6 +181,75 @@ export function fontFaceCss({ bundledBase, remoteBase } = {}, fonts = FONTS) {
     .join('\n');
 }
 
+const FONT_MIME = {
+  woff2: 'font/woff2',
+  woff: 'font/woff',
+  opentype: 'font/otf',
+  truetype: 'font/ttf'
+};
+
+/** ArrayBuffer → base64, chunked so large fonts don't blow the call stack. */
+function toBase64(buffer) {
+  const bytes = new Uint8Array(buffer);
+  if (typeof btoa === 'function') {
+    let binary = '';
+    const chunk = 0x8000;
+    for (let i = 0; i < bytes.length; i += chunk) {
+      binary += String.fromCharCode.apply(null, bytes.subarray(i, i + chunk));
+    }
+    return btoa(binary);
+  }
+  // Node (tests / SSR)
+  return Buffer.from(bytes).toString('base64');
+}
+
+/**
+ * @font-face declarations with the font bytes inlined as base64 data URIs.
+ *
+ * This is what makes a standalone export self-contained: the document carries
+ * its own fonts, so a "dumb" viewer (a transparent WebView with no asset base
+ * and no network) still renders the exact faces the operator chose, offline.
+ *
+ * Each face is fetched from its base URL and inlined. A face that cannot be
+ * fetched (CORS, offline at export time) falls back to a plain `url()` so the
+ * output still works where the file is reachable, rather than dropping the font.
+ * Only the families the document actually uses are embedded, to bound size.
+ */
+export async function embeddedFontFaceCss({ bundledBase, remoteBase } = {}, fonts = FONTS, { fetchImpl } = {}) {
+  const doFetch = fetchImpl ?? (typeof fetch === 'function' ? fetch : null);
+  const withSlash = (b) => (b.endsWith('/') ? b : `${b}/`);
+
+  const blocks = [];
+  for (const font of fileFonts(fonts)) {
+    const base = font.source === 'remote' ? remoteBase : bundledBase;
+    if (!base) continue;
+    for (const face of facesOf(font)) {
+      const url = `${withSlash(base)}${face.file}`;
+      const format = formatOf(face.file);
+      let src = `url('${url}') format('${format}')`;
+      if (doFetch) {
+        try {
+          const res = await doFetch(url);
+          if (!res.ok) throw new Error(`HTTP ${res.status}`);
+          const b64 = toBase64(await res.arrayBuffer());
+          src = `url(data:${FONT_MIME[format] ?? 'font/ttf'};base64,${b64}) format('${format}')`;
+        } catch {
+          /* keep the url() fallback */
+        }
+      }
+      const lines = [
+        `  font-family: '${font.family}';`,
+        `  src: ${src};`,
+        `  font-display: swap;`
+      ];
+      if (face.weight) lines.splice(2, 0, `  font-weight: ${face.weight};`);
+      if (face.style) lines.splice(2, 0, `  font-style: ${face.style};`);
+      blocks.push(`@font-face {\n${lines.join('\n')}\n}`);
+    }
+  }
+  return blocks.join('\n');
+}
+
 /**
  * Legacy class map. Existing content carries `class="ql-font-<id>"`, so
  * these must keep resolving. `.ql-font-greatvibes` is new: the original

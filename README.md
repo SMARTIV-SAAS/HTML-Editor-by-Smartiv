@@ -340,9 +340,18 @@ Device notes:
   in the preview.
 - **Scale** — every size is in `rem`. A 720p panel only needs a different
   `rootFontSize`; the stylesheet also steps down below 1366px.
-- **Fonts** — system fonts only. A web font that fails to load on an offline
-  device reflows the screen mid-rotation.
-- **No network** — the exported document issues no requests at all.
+- **Fonts are embedded** — `exportTv()` inlines each *used* face as a base64
+  `@font-face src`, so the file renders the exact fonts offline in a bare,
+  transparent WebView with no asset base and no network. Embedding needs a URL to
+  read the files from: set `options.fontBundledBase` (and `fontRemoteBase` for
+  uploaded fonts). Because it fetches the bytes, **`exportTv()` is async** — await
+  it (or the `export` event payload). Without a base it falls back to `url()`
+  references. `buildDocument()` stays synchronous for the live preview.
+- **Self-describing** — alignment (`text-align`), colour, and font-family are all
+  inline or in the embedded `<style>`; the output paints no opaque background, so
+  the player's wallpaper shows through. A bare viewer needs to add nothing.
+- **No network** — with fonts embedded, the exported document issues no requests
+  at all.
 
 ### Font manager — uploads shared across the whole CMS
 
