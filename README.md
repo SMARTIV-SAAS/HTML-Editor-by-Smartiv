@@ -635,8 +635,8 @@ New in 1.1:
 
 Working: inline formatting (bold/italic/underline/strikethrough, plus `code`,
 `mark`, `small`, `del`, `ins`, `sub`, `sup`, `abbr`), blocks and headings
-`h1`–`h6`, Preformatted (`<pre>`), alignment, lists, typography with independent
-text and highlight colour, field lists (colon-aligned), 1–3 column panels,
+`h1`–`h6`, Preformatted (`<pre>`), alignment, line spacing, lists, typography
+with independent text and highlight colour, field lists (colon-aligned), 1–3 column panels,
 tables, links, undo/redo, HTML source mode, 1080p TV preview with safe area,
 standalone export, a font-upload manager shared across the CMS, and a dark-mode
 **writing aid** (remembered in localStorage) that never touches the content.

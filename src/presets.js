@@ -10,6 +10,7 @@ import { tablePlugin } from './plugins/table.js';
 import { sourceViewPlugin } from './plugins/sourceView.js';
 import { tvPlugin } from './plugins/tv.js';
 import { surfacePlugin } from './plugins/surface.js';
+import { spacingPlugin } from './plugins/spacing.js';
 
 export const defaultPlugins = [
   surfacePlugin,
@@ -19,6 +20,7 @@ export const defaultPlugins = [
   alignPlugin,
   listsPlugin,
   typographyPlugin,
+  spacingPlugin,
   fieldListPlugin,
   linkPlugin,
   tablePlugin,
@@ -31,7 +33,7 @@ export const defaultToolbar = [
   ['blockFormat', 'fontFamily', 'fontSize'],
   ['bold', 'italic', 'underline', 'strikethrough', 'removeFormat'],
   ['foreColor', 'backColor'],
-  ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify'],
+  ['alignLeft', 'alignCenter', 'alignRight', 'alignJustify', 'lineSpacing'],
   ['bulletList', 'numberList', 'outdent', 'indent'],
   ['fieldList', 'fieldListColon', 'fieldListLabelWidth'],
   ['panels', 'panelColumns', 'table', 'tableAddRow', 'tableAddColumn', 'tableDeleteRow', 'tableDeleteColumn'],

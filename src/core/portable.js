@@ -53,7 +53,10 @@ function fieldListsToTables(doc) {
     table.setAttribute('data-sv-block', 'fields');
     table.setAttribute('data-sv-colon', mode);
     if (labelWidth) table.setAttribute('data-sv-label-width', labelWidth);
-    table.setAttribute('style', 'border-collapse:collapse;margin:0 0 .8em');
+    // Carry the operator's line spacing onto the table so it survives the
+    // dl → table conversion and bakes into the export.
+    const lh = dl.style.lineHeight;
+    table.setAttribute('style', 'border-collapse:collapse;margin:0 0 .8em' + (lh ? `;line-height:${lh}` : ''));
 
     const kids = [...dl.children];
     for (let i = 0; i < kids.length; i++) {
