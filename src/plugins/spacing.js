@@ -23,15 +23,21 @@ function spacingTarget(block) {
 export function spacingPlugin(editor) {
   const options = editor.options.lineHeights ?? [
     { value: '', text: 'Spacing' },
-    { value: '1', text: 'Single' },
-    { value: '1.15', text: 'Tight' },
-    { value: '1.35', text: 'Normal' },
-    { value: '1.6', text: 'Relaxed' },
-    { value: '2', text: 'Double' }
+    { value: '0.1', text: '0.1' },
+    { value: '0.2', text: '0.2' },
+    { value: '0.3', text: '0.3' },
+    { value: '0.4', text: '0.4' },
+    { value: '0.5', text: '0.5' },
+    { value: '0.75', text: '0.75' },
+    { value: '1', text: '1.0' },
+    { value: '1.15', text: '1.15' },
+    { value: '1.35', text: '1.35' },
+    { value: '1.6', text: '1.6' },
+    { value: '2', text: '2.0' }
   ];
 
   editor.addCommand('lineSpacing', (value) => {
-    const blocks = blocksInSelection(editor);
+    const blocks = editor.selection.blocks(BLOCK_SELECTOR);
     if (!blocks.length) return false;
     const targets = new Set(blocks.map(spacingTarget));
     for (const block of targets) {
@@ -58,20 +64,6 @@ export function spacingPlugin(editor) {
   });
 }
 spacingPlugin.pluginName = 'spacing';
-
-/** The block-level elements the current selection touches. */
-function blocksInSelection(editor) {
-  const range = editor.selection.range();
-  if (!range) return [];
-  const root = editor.root;
-  const all = [...root.querySelectorAll(BLOCK_SELECTOR)];
-  const hit = all.filter((b) => {
-    try { return range.intersectsNode(b); } catch { return false; }
-  });
-  if (hit.length) return hit;
-  const near = nearestBlock(editor);
-  return near ? [near] : [];
-}
 
 function nearestBlock(editor) {
   const block = editor.selection.closest(

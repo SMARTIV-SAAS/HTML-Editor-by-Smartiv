@@ -1,4 +1,6 @@
 /** Text alignment. Writes text-align on the block rather than <center> tags. */
+const ALIGN_BLOCKS = 'p,h1,h2,h3,h4,h5,h6,li,dt,dd,blockquote,pre,.sv-panel__title,.sv-fields';
+
 export function alignPlugin(editor) {
   const aligns = [
     { name: 'alignLeft', value: 'left', icon: '⯇', label: 'Align left', state: 'justifyLeft' },
@@ -9,11 +11,14 @@ export function alignPlugin(editor) {
 
   for (const a of aligns) {
     editor.addCommand(a.name, () => {
-      const block = editor.selection.closest(
-        (n) => n.nodeType === 1 && getComputedStyle(n).display !== 'inline'
-      );
-      if (block && block !== editor.root) block.style.textAlign = a.value;
-      else editor.native(a.state);
+      // Apply to every block the selection touches, not just the one at the
+      // caret, so selecting several paragraphs aligns all of them.
+      const blocks = editor.selection.blocks(ALIGN_BLOCKS);
+      if (blocks.length) {
+        for (const block of blocks) block.style.textAlign = a.value;
+        return true;
+      }
+      return editor.native(a.state);
     });
     editor.ui.addButton(a.name, {
       icon: a.icon,

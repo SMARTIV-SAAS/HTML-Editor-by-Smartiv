@@ -38,7 +38,7 @@ export const defaultToolbar = [
   ['fieldList', 'fieldListColon', 'fieldListLabelWidth'],
   ['panels', 'panelColumns', 'table', 'tableAddRow', 'tableAddColumn', 'tableDeleteRow', 'tableDeleteColumn'],
   ['link', 'unlink', 'hr'],
-  ['darkMode', 'source', 'preview', 'safeArea', 'exportTv']
+  ['darkMode', 'source', 'exportTv']
 ];
 
 /** Cut-down bar for CMS forms that only need the signage essentials. */
@@ -50,5 +50,5 @@ export const compactToolbar = [
   ['alignLeft', 'alignCenter', 'alignRight'],
   ['fieldList', 'fieldListColon'],
   ['panels', 'panelColumns'],
-  ['darkMode', 'preview']
+  ['darkMode']
 ];

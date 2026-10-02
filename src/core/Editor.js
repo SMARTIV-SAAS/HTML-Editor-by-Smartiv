@@ -21,6 +21,7 @@ export class Editor {
       set: (r) => sel.setRange(root, r),
       element: () => sel.currentElement(root),
       closest: (fn) => sel.closestFromCaret(root, fn),
+      blocks: (selector) => sel.blocksInSelection(root, selector),
       insert: (node) => sel.insertNode(root, node),
       save: () => sel.saveCaret(root),
       restore: (s) => sel.restoreCaret(root, s),

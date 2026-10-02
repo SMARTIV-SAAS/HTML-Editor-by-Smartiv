@@ -61,6 +61,27 @@ export function restoreCaret(root, snapshot) {
   setRange(root, range);
 }
 
+/**
+ * The block-level elements matching `selector` that the current selection
+ * touches — so a toolbar action (alignment, line spacing) applies to every
+ * block in the selection, not just the one at the caret. Falls back to the
+ * nearest matching ancestor when the selection intersects none directly.
+ */
+export function blocksInSelection(root, selector) {
+  const range = getRange(root);
+  if (!range) return [];
+  const hit = [...root.querySelectorAll(selector)].filter((b) => {
+    try { return range.intersectsNode(b); } catch { return false; }
+  });
+  if (hit.length) return hit;
+  let node = currentElement(root);
+  while (node && node !== root) {
+    if (node.matches?.(selector)) return [node];
+    node = node.parentNode;
+  }
+  return [];
+}
+
 /** Nearest ancestor element of the caret, bounded by root. */
 export function currentElement(root) {
   const range = getRange(root);
